@@ -12,16 +12,16 @@ namespace MazeGame.Maze
         private List<bool> m_prevCells = new List<bool>();
         public int m_gridSize = 50;
         public float m_cellSize = 1f;
-        public int m_seed = 42;
+        public int m_seed = 43;
         public int m_iterations = 100;
 
         private void Start()
         {
             UnityEngine.Random.InitState(m_seed);
 
-            for (int i = 0; i < m_gridSize * m_gridSize; i++)
+            for (int i = 0; i < m_gridSize * m_gridSize; i++) // fill the cells
             {
-                int v = UnityEngine.Random.Range(0, 2);
+                int v = UnityEngine.Random.Range(0, 2); // 0 or 1
 
                 if (v == 0)
                 {
@@ -57,7 +57,7 @@ namespace MazeGame.Maze
                 {
                     for (int x = 0; x < m_gridSize; ++x)
                     {
-                        int ind = y * m_gridSize + x; //is this wrong?
+                        int ind = y * m_gridSize + x;
                         int c = GetKernel(ind);
 
                         if (c < 4)
@@ -70,7 +70,7 @@ namespace MazeGame.Maze
                         }
                     }
                 }
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(.1f);
             }            
             yield return null;
         }
@@ -95,10 +95,12 @@ namespace MazeGame.Maze
             int c = 0;
             int y = Mathf.FloorToInt((float)index / (float)m_gridSize); //dealing with grids, important
             int x = Mathf.FloorToInt((float)index % (float)m_gridSize);
-            if (x > 1 || x > m_gridSize - 2 || y < 1 || y > m_gridSize - 2)
+
+            if (x < 1 || x > m_gridSize - 2 || y < 1 || y > m_gridSize - 2) //if out of bounds, or at the edge
             {
                 return 5;
             }
+
             for (int i = 0; i < kvalues.Length; ++i)
             {
                 c += Convert.ToInt32(m_prevCells[kvalues[i]]);
@@ -114,7 +116,8 @@ namespace MazeGame.Maze
                 float x = (i % this.m_gridSize);
                 float y = (i / this.m_gridSize);
                 Vector3 p = new Vector3(x, 0f, y);
-                if (m_cells[i])
+
+                if (m_cells[i]) //True cell = black
                 {
                     Gizmos.color = Color.black;
                 }
@@ -122,6 +125,7 @@ namespace MazeGame.Maze
                 {
                     Gizmos.color = Color.green;
                 }
+
                 Gizmos.DrawCube(p, new Vector3(m_cellSize, 0.1f, m_cellSize));
             }
         }
