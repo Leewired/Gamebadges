@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 842d0ae6c2f8bd54db536e18804a5d38, type: 3}
+  m_Name: celldata
+  m_EditorClassIdentifier: Assembly-CSharp::CellData
+  m_wallPieces:
+  - {fileID: 1471165243708985049, guid: a37f66c2dc8d98040842d29baf515ac3, type: 3}
+  m_roomPieces:
+  - {fileID: 6787031786901597306, guid: 568f3dd9b8d159843a77bbd98853b7c7, type: 3}
