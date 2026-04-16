@@ -9,7 +9,7 @@ namespace MazeGame.Maze
     {
         //initialize fields for use
         private List<bool> m_cells = new List<bool>(); //list to hold each cell with Boolean values, True for wall cell, False for a floor cell for example
-        public List<int> m_walkers = new List<int>(); //Each drunkard, list of Ints. Ints we can use to give the respectable drunkards a starting square or index
+        public List<int> m_walkers = new List<int>(); //each drunkard, list of Ints. Ints we can use to give the respectable drunkards a starting square or index
         public int m_gridSize = 50; //length of row
         public int m_seed = 42; //for replicatable results, and a less disappointed lecturer 
         public int m_iterations = 1000;
@@ -26,7 +26,7 @@ namespace MazeGame.Maze
 
             for (int i = 0; i < m_gridSize * m_gridSize; i++)
             {
-                m_cells.Add(true); // Create a grid's worth of wall cells.
+                m_cells.Add(true); //create a grid's worth of wall cells.
             }
 
             StartCoroutine(WaitBeginning());
@@ -34,7 +34,7 @@ namespace MazeGame.Maze
 
         private IEnumerator WaitBeginning()
         {
-            yield return new WaitForSeconds(2f); // wait so we can switch to scene view
+            yield return new WaitForSeconds(2f); //wait so we can switch to scene view
             StartCoroutine(Iterate()); //let's iterate
             yield return null;
         }
@@ -47,7 +47,7 @@ namespace MazeGame.Maze
             {
                 for (int i = 0; i < m_walkers.Count; i++) //for each drunkard
                 {
-                    m_cells[m_walkers[i]] = false; //Cell that matches a drunkard = a floor
+                    m_cells[m_walkers[i]] = false; //cell that matches a drunkard = a floor
 
                     int v = Random.Range(0, 4); //random 0 to 3 to give for direction selection
                     int new_Ind = m_walkers[i] + m_directions[v]; //new index to 'place' a drunkard in
