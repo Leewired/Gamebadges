@@ -307,7 +307,6 @@ public class Maze : MonoBehaviour
         {
             int index = UnityEngine.Random.Range(0, m_maze.Length);
             FindRooms(index);
-            UnityEngine.Debug.Log(i.ToString());
         }
     }
 
