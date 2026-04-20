@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: celldata
   m_EditorClassIdentifier: Assembly-CSharp::CellData
   m_wallPieces:
-  - {fileID: 1471165243708985049, guid: a37f66c2dc8d98040842d29baf515ac3, type: 3}
+  - {fileID: 1506580768674593764, guid: 29564d45457a7164cac55b6279021123, type: 3}
   m_roomPieces:
-  - {fileID: 6787031786901597306, guid: 568f3dd9b8d159843a77bbd98853b7c7, type: 3}
+  - {fileID: 8688982147424508776, guid: 17359e2633882274795032541d92721f, type: 3}
+  m_exitPiece: {fileID: 2089691405862040516, guid: 83327b456d847c74ea78f03aafae2a19, type: 3}
+  m_key: {fileID: 7265954159532227488, guid: 6dce86e3cf85d574db8b5cb0809f0d32, type: 3}

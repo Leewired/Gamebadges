@@ -3,12 +3,16 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+//TODO: Destroy old maze
+//TODO: Other usability: starting coordinates etc.
+
 public class MazeEditor : EditorWindow
 {
     private Maze m_maze;
     private IntegerField m_width = null;
     private IntegerField m_height = null;
     private IntegerField m_seed = null;
+    private IntegerField m_iterations = null;
 
     [MenuItem("GameBadges/Maze Editor")]
     public static void CreateMazeEditor()
@@ -46,9 +50,12 @@ public class MazeEditor : EditorWindow
         this.m_height.value = 20;
         this.m_seed = new IntegerField("Seed");
         this.m_seed.value = 2;
+        this.m_iterations = new IntegerField("Iterations");
+        this.m_iterations.value = 1000;
         groupBox.Add(this.m_width);
         groupBox.Add(this.m_height);
         groupBox.Add(this.m_seed);
+        groupBox.Add(this.m_iterations);
 
         Button b = new Button();
         b.text = "Create Maze";
@@ -60,14 +67,15 @@ public class MazeEditor : EditorWindow
 
     private void B_clicked() //Create maze button clicked
     {
-        Debug.Log("Hoo");
+        Debug.Log("Clicked");
         GameObject o = new GameObject("Maze");
         this.m_maze = o.AddComponent<Maze>();
         Object ob = AssetDatabase.LoadAssetAtPath("Assets/Data/celldata.asset", typeof(CellData));
-        //TODO: Load asset for celldata.
+        this.m_maze.m_cellData = (CellData)ob;
         this.m_maze.GenerateMaze(
             this.m_width.value,
             this.m_height.value,
-            this.m_seed.value);
+            this.m_seed.value,
+            this.m_iterations.value);
     }
 }
