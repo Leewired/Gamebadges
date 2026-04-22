@@ -41,7 +41,6 @@ public class Cell
     public int m_xindex = 0;
     public int m_yindex = 0;
     public bool m_key = false;
-    public bool isKey = false;
 
     public Cell()
     {
@@ -87,7 +86,7 @@ public class Cell
 
     virtual public GameObject CreateInstance(int mazeWidth) //overridable
     {
-        ConfigureInstance(m_instancedGameObject, isKey);
+        ConfigureInstance(m_instancedGameObject, m_key);
         if (this.m_key)
         {
             GameObject go = GameObject.Instantiate<GameObject>(m_cellData.m_key);
@@ -184,7 +183,7 @@ public class Maze : MonoBehaviour
     }
 
 
-    private bool IsInQueue(Queue<int> lst, int index) //check if it's already in Queue (list)
+    private bool IsInQueue(Queue<int> lst, int index) //check if it's already in Queue 
     {
         if (lst.Contains(index))
         {
@@ -209,9 +208,9 @@ public class Maze : MonoBehaviour
     {
         Queue<int> openList = new Queue<int>();
         Queue<int> closedList = new Queue<int>();
-        openList.Enqueue(index);
+        openList.Enqueue(index); //queue index to the open list
         int c = 0; // counter
-        if (index > -1 && index < Mathf.FloorToInt(this.m_size.x * this.m_size.y))
+        if (index > -1 && index < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
         {
             if (m_maze[index].GetType() == typeof(WallCell))
             {
@@ -220,7 +219,7 @@ public class Maze : MonoBehaviour
             }
             while (openList.Count != 0)
             {
-
+                //check i
                 int ind = openList.Dequeue(); //take ind out of open list
                 if (!IsInQueue(closedList, ind)) //if not in closed list
                 {
@@ -228,25 +227,26 @@ public class Maze : MonoBehaviour
                     {
                         return false; //skip
                     }
-                    closedList.Enqueue(ind);
-                    this.m_indices[this.m_indicesCount] = ind;
-                    this.m_indicesCount++;
+                    closedList.Enqueue(ind); //add to closed list
+                    this.m_indices[this.m_indicesCount] = ind; //indices = indexed rooms, saved for easy checking
+                    this.m_indicesCount++; //rooms amount
                 }
                 int x = Mathf.FloorToInt(ind % this.m_size.x); //m_size is a vector so all the casting
                 int y = Mathf.FloorToInt(ind / this.m_size.y);
                 Vector2 xy = new Vector2(x, y);
 
+                //this for loop adds adjacent rooms to open list to be checked if they're already found
                 for (int i = 0; i < m_directions.Length; ++i) //check the cell in each direction
                 {
                     Vector2 txy = xy + m_directions[i];
                     int newInd = Mathf.FloorToInt(txy.y * this.m_size.x + txy.x);
-                    if (newInd > -1 && newInd < Mathf.FloorToInt(this.m_size.x * this.m_size.y))
+                    if (newInd > -1 && newInd < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //if inside
                     {
                         
                         if (m_maze[newInd].GetType() != typeof(WallCell)) //If not a wall cell
                         {
 
-                            if (!IsInQueue(closedList, newInd))
+                            if (!IsInQueue(closedList, newInd)) //not in closed list
                             {
 
                                 if (!IsInQueue(openList, newInd)) //not in openlist --> add to openlist
@@ -278,7 +278,7 @@ public class Maze : MonoBehaviour
         m_indicesCount = 0;
         Cell c = this.m_maze[index];
 
-        if (c.GetType() != typeof(WallCell)) //no use changing room to a room
+        if (c.GetType() != typeof(WallCell)) //Check if the index we're at is a room already
         {
             return;
         }
@@ -292,7 +292,7 @@ public class Maze : MonoBehaviour
         bool lst3 = FindRoom(indUp);
         bool lst4 = FindRoom(indDown);
         int count = (lst1 ? 1 : 0) + (lst2 ? 1 : 0) + ( lst3 ? 1 : 0) + (lst4 ? 1 : 0); //if true return one for each
-        if (count == 2)
+        if (count == 2) //is it even possible to have more than two
         {
             this.m_maze[index] = c.ToRoomCell(); //override with new type of room cell
         }
@@ -315,16 +315,16 @@ public class Maze : MonoBehaviour
         int c = w * h;
         m_indices = new int[c]; //room indices
         this.m_size = new Vector2(w, h);
-        m_maze = new Cell[c];
+        m_maze = new Cell[c]; //maze is a list of cells matching room indices
         int i = 0;
-        for (int y = 0; y < h; y++)
+        for (int y = 0; y < h; y++) //for height
         {
-            for (int x = 0; x < w; x++)
+            for (int x = 0; x < w; x++) //for width
             {
                 Cell cell = null;
                 int yoe = y % 2;
                 int xoe = x % 2;
-                if (yoe == 1 && xoe == 1)
+                if (yoe == 1 && xoe == 1) //TODO: walls on each end. Currently every second in row and column
                 {
                     cell = new RoomCell();
                 }

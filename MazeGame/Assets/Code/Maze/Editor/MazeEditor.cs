@@ -1,4 +1,3 @@
-using Unity.Plastic.Newtonsoft.Json.Bson;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,7 +5,7 @@ using UnityEngine.UIElements;
 //TODO: Destroy old maze
 //TODO: Other usability: starting coordinates etc.
 
-public class MazeEditor : EditorWindow
+public class MazeEditor : EditorWindow //Class type EditorWindow
 {
     private Maze m_maze;
     private IntegerField m_width = null;
@@ -14,7 +13,7 @@ public class MazeEditor : EditorWindow
     private IntegerField m_seed = null;
     private IntegerField m_iterations = null;
 
-    [MenuItem("GameBadges/Maze Editor")]
+    [MenuItem("GameBadges/Maze Editor")] //MenuItem, so easy
     public static void CreateMazeEditor()
     {
         MazeEditor wnd = GetWindow<MazeEditor>();
@@ -22,7 +21,6 @@ public class MazeEditor : EditorWindow
     }
 
     [MenuItem("GameBadges/Create Cell Data")]
-
     public static void createCellData()
     {
         CellData cd = ScriptableObject.CreateInstance<CellData>();
@@ -36,7 +34,7 @@ public class MazeEditor : EditorWindow
         Selection.activeObject = cd;
     }
 
-    public void CreateGUI()
+    public void CreateGUI() //create GUI and populate it
     {
         VisualElement root = rootVisualElement; //root of your tab
         Label label = new Label("Maze Editor 0.0.1.");
@@ -50,7 +48,7 @@ public class MazeEditor : EditorWindow
         this.m_height.value = 20;
         this.m_seed = new IntegerField("Seed");
         this.m_seed.value = 2;
-        this.m_iterations = new IntegerField("Iterations");
+        this.m_iterations = new IntegerField("Iterations"); //added iterations for smoother testing
         this.m_iterations.value = 1000;
         groupBox.Add(this.m_width);
         groupBox.Add(this.m_height);
@@ -68,10 +66,10 @@ public class MazeEditor : EditorWindow
     private void B_clicked() //Create maze button clicked
     {
         Debug.Log("Clicked");
-        GameObject o = new GameObject("Maze");
-        this.m_maze = o.AddComponent<Maze>();
-        Object ob = AssetDatabase.LoadAssetAtPath("Assets/Data/celldata.asset", typeof(CellData));
-        this.m_maze.m_cellData = (CellData)ob;
+        GameObject o = new GameObject("Maze"); //Create GameObject called maze
+        this.m_maze = o.AddComponent<Maze>(); //Add Maze component/script
+        Object ob = AssetDatabase.LoadAssetAtPath("Assets/Data/celldata.asset", typeof(CellData)); //TODO: Warn if no cell data.
+        this.m_maze.m_cellData = (CellData)ob; //Pass Cell Data to the maze script
         this.m_maze.GenerateMaze(
             this.m_width.value,
             this.m_height.value,
