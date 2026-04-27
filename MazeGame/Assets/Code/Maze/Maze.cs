@@ -5,30 +5,30 @@ using UnityEngine;
 
 public class RoomCell : Cell //classes for handling 3D object in their separate classes
 {
-    public override GameObject CreateInstance(int mazeWidth)
+    public override GameObject CreateInstance()
     {
         m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_roomPieces[0]);
-        base.CreateInstance(mazeWidth);
+        base.CreateInstance();
         return m_instancedGameObject;
     }
 }
 
 public class WallCell : Cell
 {
-    public override GameObject CreateInstance(int mazeWidth)
+    public override GameObject CreateInstance()
     {
         m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_wallPieces[0]);
-        base.CreateInstance(mazeWidth);
+        base.CreateInstance();
         return m_instancedGameObject;
     }
 }
 
 public class ExitCell : Cell
 {
-    public override GameObject CreateInstance(int mazeWidth)
+    public override GameObject CreateInstance()
     {
         m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_exitPiece);
-        base.CreateInstance(mazeWidth);
+        base.CreateInstance();
         return m_instancedGameObject;
     }
 }
@@ -69,7 +69,7 @@ public class Cell
         return cell;
     }
 
-    private void ConfigureInstance(GameObject instance, bool isKey)
+    private void ConfigureInstance(GameObject instance, bool isKey=false)
     {
         MeshFilter mf = instance.GetComponentInChildren<MeshFilter>();
         Mesh msh = mf.sharedMesh;
@@ -84,9 +84,9 @@ public class Cell
             m_yindex * m_size.y);
     }
 
-    virtual public GameObject CreateInstance(int mazeWidth) //overridable
+    virtual public GameObject CreateInstance() //overridable
     {
-        ConfigureInstance(m_instancedGameObject, m_key);
+        ConfigureInstance(m_instancedGameObject);
         if (this.m_key)
         {
             GameObject go = GameObject.Instantiate<GameObject>(m_cellData.m_key);
@@ -177,7 +177,7 @@ public class Maze : MonoBehaviour
     {
         foreach(Cell cell in m_maze)
         {
-            cell.CreateInstance(Mathf.FloorToInt(this.m_size.x));
+            cell.CreateInstance();
             cell.m_instancedGameObject.transform.parent = this.transform;
         }
     }
@@ -194,7 +194,7 @@ public class Maze : MonoBehaviour
 
     private bool IsRoomAlreadyFound(int index)
     {
-        for (int i = 0; i < m_indices.Length; ++i)
+        for (int i = 0; i < m_indicesCount; ++i)
         {
             if (m_indices[i] == index)
             {
@@ -219,7 +219,6 @@ public class Maze : MonoBehaviour
             }
             while (openList.Count != 0)
             {
-                //check i
                 int ind = openList.Dequeue(); //take ind out of open list
                 if (!IsInQueue(closedList, ind)) //if not in closed list
                 {
@@ -302,10 +301,10 @@ public class Maze : MonoBehaviour
 
     private void IterateMaze()
     {
-        UnityEngine.Random.InitState(m_seed);
+        Random.InitState(m_seed);
         for (int i = 0; i < m_iterations; ++i)
         {
-            int index = UnityEngine.Random.Range(0, m_maze.Length);
+            int index = Random.Range(0, m_maze.Length);
             FindRooms(index);
         }
     }

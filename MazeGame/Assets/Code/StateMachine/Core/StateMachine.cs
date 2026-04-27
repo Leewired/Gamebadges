@@ -26,6 +26,7 @@ namespace StateMachine.Core
             {
 
                 ParameterString p = new ParameterString(name, (string)value);
+                m_parameters.Add(p);
 
             }
             if (value.GetType() == typeof(bool))
