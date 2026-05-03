@@ -9,12 +9,14 @@ namespace StateMachine.Core
     {
         public Guid m_guid = Guid.Empty;
         public List<BaseConnection> m_connections = null;
+        public StateMachine m_stateMachine = null;
 
-        public BaseState()
+        public BaseState(StateMachine fsm)
         {
             m_guid = Guid.NewGuid();
             Debug.Log(string.Format("{0} created with a guid: {1}", this.GetType(), this.m_guid.ToString()));
             m_connections = new List<BaseConnection>();
+            m_stateMachine = fsm;
         }
 
         public void AddOutputConnection(BaseConnection con)

@@ -10,10 +10,8 @@ namespace StateMachine.States
     public class LoadingState : BaseState
     {
 
-        public LoadingState()
+        public LoadingState(Core.StateMachine fsm): base(fsm)
         {
-
-
 
         }
 
@@ -31,7 +29,11 @@ namespace StateMachine.States
                 Game.m_levelController = (LevelController)Game.GetController(s);
                 if (Game.m_levelController != null)
                 {
+                    PlayerComponent pc = GameObject.FindAnyObjectByType<PlayerComponent>();
+                    Game.m_player = new Player(pc);
                     Game.m_levelController.Deactivate();
+                    m_stateMachine.AddParameter("Gameplay", true);
+                    
                 }
             }
         }

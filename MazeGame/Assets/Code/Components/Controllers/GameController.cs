@@ -29,12 +29,18 @@ namespace MazeGame.Components.Controllers
         {
             m_stateMachine = new StateMachine.Core.StateMachine(); //no singletons, because we want to nest stuff
             Game.m_gameStateMachine = m_stateMachine; //pass state machine to Game
-            InitState initState = new InitState();
-            LoadingState loadingState = new LoadingState();
+            InitState initState = new InitState(m_stateMachine);
+            LoadingState loadingState = new LoadingState(m_stateMachine);
+            GameplayState gameplayState = new GameplayState(m_stateMachine);
+
             LoadingConnection loadingConnection = new LoadingConnection(m_stateMachine);
             loadingConnection.m_state = loadingState;
             initState.AddOutputConnection(loadingConnection);
 
+            GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
+            gameplayConnection.m_state = gameplayState;
+            loadingState.AddOutputConnection(gameplayConnection);
+            
             m_stateMachine.m_currentState = initState;
             m_stateMachine.StartStateMachine();
         }

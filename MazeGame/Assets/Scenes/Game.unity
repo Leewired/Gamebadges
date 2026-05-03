@@ -128,9 +128,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 100337202}
-  - component: {fileID: 100337201}
   - component: {fileID: 100337204}
   - component: {fileID: 100337203}
+  - component: {fileID: 100337205}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -138,18 +138,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &100337201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100337200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c740c2a8bbaad34f9aaa545421feec5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StateMachine.StateMachineComponent
 --- !u!4 &100337202
 Transform:
   m_ObjectHideFlags: 0
@@ -207,6 +195,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d07eb6103d1a864d9e8b8533b2c0680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputHandler
+--- !u!114 &100337205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100337200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66b457d80018a6d479e800ed7f87ba79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MazeGame.Components.Controllers.GameController
+  m_visualRoot: {fileID: 0}
+  m_logicRoot: {fileID: 0}
+  m_renderingRoot: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
