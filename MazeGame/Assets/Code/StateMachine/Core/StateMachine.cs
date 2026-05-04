@@ -22,6 +22,8 @@ namespace StateMachine.Core
         public void AddParameter(string name, object value)
         {
 
+            //TODO: add check if existing parameter
+
             if (value.GetType() == typeof(string))
             {
 

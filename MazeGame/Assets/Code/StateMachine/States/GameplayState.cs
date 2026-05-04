@@ -19,6 +19,12 @@ namespace StateMachine.States
             Game.m_input.OnLook += M_input_OnLook;
             Game.m_levelController.Activate();
         }
+
+        public override void UpdateState()
+        {
+            base.UpdateState();
+            //TODO: update enemy here
+        }
         
         public override void StopState()
         {

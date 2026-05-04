@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using MazeGame.Maze;
 
 //TODO: Destroy old maze
 //TODO: Other usability: starting coordinates etc.
