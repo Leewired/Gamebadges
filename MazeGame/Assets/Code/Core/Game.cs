@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using StateMachine.Core;
 using MazeGame.Components.Controllers;
 using MazeGame.Maze;
+using MazeGame.Core;
 
 namespace MazeGame.Core
 {
@@ -18,6 +19,7 @@ namespace MazeGame.Core
         public static Enemy m_enemy = null;
         public static Maze.Maze m_maze = null;
         public static GameData m_gameData = null;
+        public static DialogueDatabase m_dialogueDatabase  = null;
 
 
         public static BaseController GetController(Scene s)
