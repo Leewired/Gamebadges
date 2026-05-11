@@ -9,7 +9,7 @@ namespace MazeGame.Core
 		public delegate void OnMoveHandler(Vector2 v);
 		public event OnMoveHandler OnMove;
 		public delegate void OnLookHandler(Vector2 v);
-		public event OnMoveHandler OnLook;
+		public event OnLookHandler OnLook;
 
 		public static Input instance = null;
 

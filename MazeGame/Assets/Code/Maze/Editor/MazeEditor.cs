@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using MazeGame.Maze;
 
 //TODO: Destroy old maze
+//TODO: Spawn to hierarchy
 //TODO: Other usability: starting coordinates etc.
 
 public class MazeEditor : EditorWindow //Class type EditorWindow
@@ -44,9 +45,9 @@ public class MazeEditor : EditorWindow //Class type EditorWindow
         GroupBox groupBox = new GroupBox("Maze settings");
         groupBox.style.backgroundColor = Color.gray2;
         this.m_width = new IntegerField("Width");
-        this.m_width.value = 20;
+        this.m_width.value = 21;
         this.m_height = new IntegerField("Height");
-        this.m_height.value = 20;
+        this.m_height.value = 21;
         this.m_seed = new IntegerField("Seed");
         this.m_seed.value = 2;
         this.m_iterations = new IntegerField("Iterations"); //added iterations for smoother testing

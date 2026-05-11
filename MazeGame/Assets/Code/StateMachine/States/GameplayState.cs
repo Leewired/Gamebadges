@@ -18,12 +18,19 @@ namespace StateMachine.States
             Game.m_input.OnMove += M_input_OnMove; //Assign delegate to new function
             Game.m_input.OnLook += M_input_OnLook;
             Game.m_levelController.Activate();
+            Game.m_enemy.m_stateMachine.StartStateMachine();
+            Game.m_gameData.m_scene = Game.m_levelController.gameObject.scene;
+
+            Game.m_gameData.LoadData();
+            //TODO: Add write to a button or game closing etc.
+            //TODO: set player data based on load data
+            //TODO: do it in a state
         }
 
         public override void UpdateState()
         {
             base.UpdateState();
-            //TODO: update enemy here
+            Game.m_enemy.Update();            
         }
         
         public override void StopState()

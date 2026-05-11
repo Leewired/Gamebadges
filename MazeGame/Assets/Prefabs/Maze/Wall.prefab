@@ -102,6 +102,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 771d30eda73d54845a2db29c2b729db6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2313f91abe4b72e4189ebf41cc8f38ed, type: 2}
     - target: {fileID: 919132149155446097, guid: 771d30eda73d54845a2db29c2b729db6, type: 3}
       propertyPath: m_Name
       value: wallmesh

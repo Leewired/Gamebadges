@@ -2,6 +2,7 @@
 using StateMachine.Core;
 using MazeGame.Components;
 using StateMachine.States.Enemy;
+using MazeGame.Core;
 
 namespace MazeGame.Core
 {
@@ -22,9 +23,13 @@ namespace MazeGame.Core
 		{
 			m_stateMachine = new StateMachine.Core.StateMachine();
 			InitState initState = new InitState(m_stateMachine);
-			//RoamingState roamingState = new RoamingState(m_stateMachine);
-			//TODO: roamingState
+			RoamingState roamingState = new RoamingState(m_stateMachine);
+
 			RoamingConnection roamingConnection = new RoamingConnection(m_stateMachine);
+			roamingConnection.m_state = roamingState;
+			initState.AddOutputConnection(roamingConnection);
+
+			m_stateMachine.m_currentState = initState;
 		}
 
 		public void Update()

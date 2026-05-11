@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using MazeGame.Core;
+using UnityEngine;
+using MazeGame.Components;
 
 namespace MazeGame.Core
 {
@@ -14,6 +16,7 @@ namespace MazeGame.Core
 		public void TurnPlayer(Vector2 mouseDelta)
 		{
 			m_characterInstance.transform.Rotate(0f, mouseDelta.x * 0.2f, 0f);
+			Game.m_gameData.m_playerRotation = m_characterInstance.transform.rotation;
 		}
 
 		public void MovePlayer(Vector2 wasd)
@@ -23,6 +26,7 @@ namespace MazeGame.Core
 			if (m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
 			{
 				m_rigidBody.AddForce(f, ForceMode.Force);
+				Game.m_gameData.m_playerPosition = m_rigidBody.position;
 			}
 		}
 

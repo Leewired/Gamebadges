@@ -35,23 +35,24 @@ namespace StateMachine.States
                     Game.m_player = new Player(pc);
 
                     EnemyComponent ec  = GameObject.FindAnyObjectByType<EnemyComponent>();
-                    Game.m_enemy = new Enemy(ec);
+                    Game.m_enemy = new MazeGame.Core.Enemy(ec);
 
                     Game.m_levelController.Deactivate();
                     m_stateMachine.AddParameter("Gameplay", true);
 
                     SceneManager.SetActiveScene(s);
+                    //partial recreation of the maze due to not having acces to it anymore
                     Maze m = Game.m_levelController.m_visualRoot.GetComponentInChildren<Maze>();
                     if (m != null)
                     {
-                        Game.m_maze = m; //partial recreation of the maze due to not having acces to it anymore
+                        Game.m_maze = m;
                         CellComponent[] comps = Game.m_levelController.m_visualRoot.GetComponentsInChildren<CellComponent>();
                         Cell[] cells = new Cell[comps.Length];
                         for (int i=0; i<comps.Length; i++)
                         {
                             if (comps[i].m_floor)
                             {
-                                cells[i] = new RoomCell();
+                                cells[i] = new RoomCell();                                
                             }
                             else
                             {
@@ -59,6 +60,8 @@ namespace StateMachine.States
                             }
                             cells[i].m_instancedGameObject = comps[i].gameObject;
                         }
+                        MeshRenderer mr = comps[0].gameObject.GetComponentInChildren<MeshRenderer>(); //setting on single wall affects all
+                        mr.sharedMaterial.SetColor("_Color", Settings.CreateInstance().m_color); //load color from settings
                         Game.m_maze.m_maze = cells;
                         Game.m_maze.m_indicesCount = cells.Length;
 

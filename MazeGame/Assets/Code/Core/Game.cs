@@ -17,6 +17,7 @@ namespace MazeGame.Core
         public static Player m_player = null;
         public static Enemy m_enemy = null;
         public static Maze.Maze m_maze = null;
+        public static GameData m_gameData = null;
 
 
         public static BaseController GetController(Scene s)

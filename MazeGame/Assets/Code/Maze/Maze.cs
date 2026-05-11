@@ -6,34 +6,39 @@ namespace MazeGame.Maze
 {
     public class RoomCell : Cell //classes for handling 3D object in their separate classes
     {
-        public override GameObject CreateInstance()
+        public override GameObject CreateInstance(int mazeWidth)
         {
             m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_roomPieces[0]);
-            base.CreateInstance();
+            CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
+            cc.m_floor = true;
+            cc.m_index = m_yindex * mazeWidth * m_xindex;
+            base.CreateInstance(mazeWidth);
             return m_instancedGameObject;
         }
     }
 
     public class WallCell : Cell
     {
-        public override GameObject CreateInstance()
+        public override GameObject CreateInstance(int mazeWidth)
         {
             m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_wallPieces[0]);
-            base.CreateInstance();
+            CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
+            cc.m_floor = false;
+            cc.m_index = m_yindex * mazeWidth * m_xindex;
+            base.CreateInstance(mazeWidth);
             return m_instancedGameObject;
         }
     }
 
     public class ExitCell : Cell
     {
-        public override GameObject CreateInstance()
+        public override GameObject CreateInstance(int mazeWidth)
         {
             m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_exitPiece);
             CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
             cc.m_floor = true;
-            // cc.m_index = y.index * mazeWidth + m_xindex;
-            //TODO: fix CellComponent adding
-            base.CreateInstance();
+            cc.m_index = m_yindex * mazeWidth * m_xindex;
+            base.CreateInstance(mazeWidth);
             return m_instancedGameObject;
         }
     }
@@ -89,7 +94,7 @@ namespace MazeGame.Maze
                 m_yindex * m_size.y);
         }
 
-        virtual public GameObject CreateInstance() //overridable
+        virtual public GameObject CreateInstance(int mazeWidth) //overridable
         {
             ConfigureInstance(m_instancedGameObject);
             if (this.m_key)
@@ -182,7 +187,7 @@ namespace MazeGame.Maze
         {
             foreach (Cell cell in m_maze)
             {
-                cell.CreateInstance();
+                cell.CreateInstance(Mathf.FloorToInt(this.m_size.x));
                 cell.m_instancedGameObject.transform.parent = this.transform;
             }
         }

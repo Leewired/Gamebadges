@@ -1,7 +1,7 @@
 using UnityEngine;
 using StateMachine.Core;
 
-namespace StateMachine.Core
+namespace StateMachine.States
 {
 
     public class LoadingConnection : BaseConnection
