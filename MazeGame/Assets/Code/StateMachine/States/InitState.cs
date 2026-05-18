@@ -18,6 +18,7 @@ namespace StateMachine.States
         {
             base.StartState();
             Game.m_gameData = new GameData();
+            Game.m_script.RunStartup();
             Game.m_gameStateMachine.AddParameter("Load", true); //load parameter true makes state move on after init
 
             if (File.Exists(Application.persistentDataPath + "/settings.xml"))

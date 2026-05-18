@@ -19,6 +19,8 @@ namespace MazeGame.Components.Controllers
 
             base.Start();
             m_input = MazeGame.Core.Input.GetInstance();
+            Game.m_script = new MazeScript();
+            Game.m_script.LoadScript();
             Game.m_input = m_input;
             SetupStateMachine();
             Game.m_gameController = this;

@@ -20,6 +20,7 @@ namespace MazeGame.Core
         public static Maze.Maze m_maze = null;
         public static GameData m_gameData = null;
         public static DialogueDatabase m_dialogueDatabase  = null;
+        public static MazeScript m_script = null;
 
 
         public static BaseController GetController(Scene s)
