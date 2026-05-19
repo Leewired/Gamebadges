@@ -43,6 +43,11 @@ namespace MazeGame.Components
             Debug.Log("Look input value detected.");
             Game.m_input.InputLook(v.Get<Vector2>());
         }
+        public void OnAccept(InputValue v)
+        {
+            Debug.Log("Accept accepted.");
+            Game.m_input.InputAccept();
+        }
 
 
     }

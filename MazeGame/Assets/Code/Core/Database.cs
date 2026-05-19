@@ -6,9 +6,9 @@ namespace MazeGame.Core
 
     public class BaseDatabase
     {
-        private string m_dbName = "";
+        public string m_dbName = "";
         private string m_dbFile = "";
-        private SqliteConnection m_connection = null;
+        public SqliteConnection m_connection = null;
 
         public BaseDatabase(string dbName, string dbFile)
         {
@@ -16,32 +16,39 @@ namespace MazeGame.Core
             m_dbFile = dbFile;
             m_connection = new SqliteConnection(dbFile);
         }
-
-        public void ExecuteSQL(string sql)
-        {
-            m_connection.Open();
-            using (SqliteCommand cmd = m_connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                using (SqliteDataReader rdr = cmd.ExecuteReader())
-                {
-                    if (rdr.Read())
-                    {
-                        Debug.Log(rdr["fin"]);
-                    }
-                }
-            }
-            m_connection.Close();
-        }
+      
     }
 
 
     public class DialogueDatabase: BaseDatabase
     {
         public DialogueDatabase(
-            string dbName = "DialogueDatabase",
+            string dbName = "Dialogue",
             string dbFile = "URI=file:Assets/Resources/Dialogue.db") : base(dbName, dbFile)
         {
+        }
+
+        public string ReadDialogueLine(int id)
+        {
+            string line = "";
+            m_connection.Open();
+
+            using (SqliteCommand cmd = m_connection.CreateCommand())
+            {
+                Settings set = Settings.CreateInstance();
+                string l = set.m_language;
+                cmd.CommandText = string.Format("Select {0} from {1} where id={2}", l, this.m_dbName, id.ToString());
+                using(SqliteDataReader reader = cmd.ExecuteReader())
+                {
+                    if(reader.Read())
+                    {
+                        line = reader[l].ToString();
+                    }
+                }
+            }
+
+            m_connection.Close();            
+            return line;
         }
 
     }

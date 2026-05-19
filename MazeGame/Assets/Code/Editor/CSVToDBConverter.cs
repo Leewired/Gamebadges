@@ -3,12 +3,12 @@ using UnityEditor;
 using System.IO;
 using System;
 using Mono.Data.Sqlite;
-using Codice.Client.BaseCommands.BranchExplorer;
 
 
 namespace MazeGame.Editor
 {
 
+    //TODO: UTF-8 encoding
     public class CSVToDBConverter
     {
         [MenuItem("GameBadges/Convet CSV to DB")]

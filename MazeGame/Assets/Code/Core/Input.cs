@@ -10,10 +10,13 @@ namespace MazeGame.Core
 		public event OnMoveHandler OnMove;
 		public delegate void OnLookHandler(Vector2 v);
 		public event OnLookHandler OnLook;
+		
+		public delegate void OnAcceptHandler();
+        public event OnAcceptHandler OnAccept;
 
-		public static Input instance = null;
+        public static Input instance = null;
 
-		private Input() //this will be a singleton. Can't call the constructor as its private.
+		private Input() //this will be a singleton. Can't call the constructor as it's private.
         {
 			Debug.Log("Input class created.");
 		} 
@@ -34,6 +37,10 @@ namespace MazeGame.Core
 		public void InputLook(Vector2 v)
 		{
             OnLook?.Invoke(v);
+        }
+		public void InputAccept()
+		{
+            OnAccept?.Invoke();
         }
 
 	}

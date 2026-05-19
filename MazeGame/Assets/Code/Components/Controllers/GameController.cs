@@ -33,15 +33,19 @@ namespace MazeGame.Components.Controllers
             Game.m_gameStateMachine = m_stateMachine; //pass state machine to Game
             InitState initState = new InitState(m_stateMachine);
             LoadingState loadingState = new LoadingState(m_stateMachine);
+            IntroState introState = new IntroState(m_stateMachine);
             GameplayState gameplayState = new GameplayState(m_stateMachine);
 
             LoadingConnection loadingConnection = new LoadingConnection(m_stateMachine);
             loadingConnection.m_state = loadingState;
-            initState.AddOutputConnection(loadingConnection);
-
             GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
             gameplayConnection.m_state = gameplayState;
-            loadingState.AddOutputConnection(gameplayConnection);
+            IntroConnection introConnection = new IntroConnection(m_stateMachine);
+            introConnection.m_state = introState;
+
+            initState.AddOutputConnection(loadingConnection);
+            loadingState.AddOutputConnection(introConnection);
+            introState.AddOutputConnection(gameplayConnection); 
             
             m_stateMachine.m_currentState = initState;
             m_stateMachine.StartStateMachine();

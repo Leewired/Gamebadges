@@ -21,16 +21,20 @@ namespace StateMachine.States
         {
             base.StartState();
             Game.m_dialogueDatabase = new DialogueDatabase();
-            Game.m_dialogueDatabase.ExecuteSQL("select * from dialogue where id=3");
             SceneManager.LoadSceneAsync("Level", LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("Intro", LoadSceneMode.Additive);
         }
 
         public override void UpdateState()
         {
-            Scene s = SceneManager.GetSceneByName("Level");
-            if (s.isLoaded)
+            Scene s1 = SceneManager.GetSceneByName("Level");
+            Scene s2 = SceneManager.GetSceneByName("Intro"); //TODO: Load intro first
+            //TODO: Add camera to intro
+
+            if (s1.isLoaded && s2.isLoaded)
             {
-                Game.m_levelController = (LevelController)Game.GetController(s);
+                Game.m_levelController = (LevelController)Game.GetController(s1);
+                Game.m_introController = (IntroController)Game.GetController(s2);
                 if (Game.m_levelController != null)
                 {
                     PlayerComponent pc = GameObject.FindAnyObjectByType<PlayerComponent>();
@@ -40,9 +44,9 @@ namespace StateMachine.States
                     Game.m_enemy = new MazeGame.Core.Enemy(ec);
 
                     Game.m_levelController.Deactivate();
-                    m_stateMachine.AddParameter("Gameplay", true);
+                    Game.m_introController.Deactivate();
 
-                    SceneManager.SetActiveScene(s);
+                    SceneManager.SetActiveScene(s1);
                     //partial recreation of the maze due to not having acces to it anymore
                     Maze m = Game.m_levelController.m_visualRoot.GetComponentInChildren<Maze>();
                     if (m != null)
@@ -68,7 +72,9 @@ namespace StateMachine.States
                         Game.m_maze.m_indicesCount = cells.Length;
 
                     }
-                    
+
+                    m_stateMachine.AddParameter("Intro", true);
+
                 }
             }
         }
