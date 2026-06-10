@@ -12,6 +12,7 @@ namespace MazeGame.Core
         public Script m_script = null; //store instance
         private string m_startupScript = "";
         private string m_levelScript = "";
+        private string m_vector3Script = "";
 
         public MazeScript()
         {
@@ -28,13 +29,19 @@ namespace MazeGame.Core
             string levelFile = Application.dataPath + "/Resources/Lua/level.lua";
             m_levelScript = File.ReadAllText(levelFile);
 
+            string vector3File = Application.dataPath + "/Resources/Lua/vector3.lua";
+            m_vector3Script = File.ReadAllText(vector3File);
+
             m_script.Options.DebugPrint = s => { Debug.Log(s); }; //Delegate prints to debug.log
             m_script.Globals["GetDialogueLine"] =
                 (Func<int, string>)GetDialogueLine;
             m_script.Globals["SetIntroText"] =
                 (Action<string>)SetIntroText;
-            
+            //m_script.Globals["Vector3.PrintVector3Length"] = //This does not find the method
+                //(Action<string>)PrintVector3Length;
         }
+
+        
 
         public void RunStartup()
         {
@@ -46,6 +53,17 @@ namespace MazeGame.Core
             m_script.DoString(m_levelScript);
             DynValue v = m_script.Globals.Get("OnDialogue");
             DynValue c = m_script.Call(v, DynValue.NewNumber(1));
+
+            m_script.DoString(m_vector3Script);
+            Table v3class = m_script.Globals.Get("Vector3").Table;
+            DynValue vector3instance = m_script.Call(
+                v3class.Get("new"),
+                DynValue.Nil,
+                DynValue.NewNumber(3),
+                DynValue.NewNumber(5),
+                DynValue.NewNumber(10)
+                );
+            m_script.Call(v3class.Get("PrintVector3Length"), vector3instance);
         }
 
         private static string GetDialogueLine(int id)
@@ -59,6 +77,12 @@ namespace MazeGame.Core
             Game.m_introController.SetIntroText(text);
         }
 
+        
+        /*private static void PrintVector3Length(string text)
+        {
+            Debug.Log(text);
+        }
+        */
     }
 
 }

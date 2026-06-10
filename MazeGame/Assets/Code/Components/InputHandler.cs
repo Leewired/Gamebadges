@@ -32,7 +32,7 @@ namespace MazeGame.Components
 
         public void OnMove(InputValue v)
         {
-            Debug.Log("Move input value detected.");
+            //Debug.Log("Move input value detected.");
             m_moveVelocity = v.Get<Vector2>();
             m_moving = true;
 
@@ -40,12 +40,12 @@ namespace MazeGame.Components
 
         public void OnLook(InputValue v)
         {
-            Debug.Log("Look input value detected.");
+            //Debug.Log("Look input value detected.");
             Game.m_input.InputLook(v.Get<Vector2>());
         }
         public void OnAccept(InputValue v)
         {
-            Debug.Log("Accept accepted.");
+            //Debug.Log("Accept accepted.");
             Game.m_input.InputAccept();
         }
 

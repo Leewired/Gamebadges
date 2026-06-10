@@ -37,7 +37,7 @@ namespace StateMachine.Core
 
         virtual public void UpdateState()
         {
-            Debug.Log(string.Format("{0} with a guid: {1} has updated its state", this.GetType(), this.m_guid.ToString()));
+            //Debug.Log(string.Format("{0} with a guid: {1} has updated its state", this.GetType(), this.m_guid.ToString()));
         }
 
     }

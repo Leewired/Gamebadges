@@ -45,7 +45,7 @@ namespace StateMachine.Core
         {
             foreach(BaseParameter p in m_parameters)
             {
-                if (p.m_name.ToLower() == name.ToLower())
+                if (p.m_name == name)
                 {
                     return p;
                 }
