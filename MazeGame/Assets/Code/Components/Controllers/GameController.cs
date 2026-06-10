@@ -47,11 +47,11 @@ namespace MazeGame.Components.Controllers
             loadingState.AddOutputConnection(introConnection);
             introState.AddOutputConnection(gameplayConnection); 
             
-            m_stateMachine.m_currentState = initState;
+            m_stateMachine.m_currentState = initState; //TODO: make sure loading screen loads on top of scene, disable movement not input
             m_stateMachine.StartStateMachine();
         }
 
-        private void Update() //use fixed update for reals
+        private void Update() //TODO: use fixed update for reals
         {
             m_stateMachine.UpdateStateMachine();
         }
