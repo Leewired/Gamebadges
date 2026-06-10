@@ -38,10 +38,11 @@ namespace MazeGame.Components.Controllers
 
             LoadingConnection loadingConnection = new LoadingConnection(m_stateMachine);
             loadingConnection.m_state = loadingState;
-            GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
-            gameplayConnection.m_state = gameplayState;
             IntroConnection introConnection = new IntroConnection(m_stateMachine);
             introConnection.m_state = introState;
+            GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
+            gameplayConnection.m_state = gameplayState;
+            
 
             initState.AddOutputConnection(loadingConnection);
             loadingState.AddOutputConnection(introConnection);

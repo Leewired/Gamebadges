@@ -52,7 +52,7 @@ namespace MazeGame.Core
         {
             m_script.DoString(m_levelScript);
             DynValue v = m_script.Globals.Get("OnDialogue");
-            DynValue c = m_script.Call(v, DynValue.NewNumber(1));
+            DynValue c = m_script.Call(v, DynValue.NewNumber(1)); //call OnDialogue function with id 1
 
             m_script.DoString(m_vector3Script);
             Table v3class = m_script.Globals.Get("Vector3").Table;
