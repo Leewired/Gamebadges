@@ -7,8 +7,7 @@ namespace MazeGame.Components
 
     public class InputHandler : MonoBehaviour
     {
-
-        
+                
         private bool m_moving = false;
         private Vector2 m_moveVelocity = Vector2.zero;
 
@@ -29,7 +28,6 @@ namespace MazeGame.Components
             }
         }
 
-
         public void OnMove(InputValue v)
         {
             //Debug.Log("Move input value detected.");
@@ -37,7 +35,6 @@ namespace MazeGame.Components
             m_moving = true;
 
         }
-
         public void OnLook(InputValue v)
         {
             //Debug.Log("Look input value detected.");
@@ -47,6 +44,11 @@ namespace MazeGame.Components
         {
             //Debug.Log("Accept accepted.");
             Game.m_input.InputAccept();
+        }
+        public void OnEnd(InputValue v)
+        {
+            Debug.Log("End button pushed.");
+            Game.m_input.InputEnd();
         }
 
 

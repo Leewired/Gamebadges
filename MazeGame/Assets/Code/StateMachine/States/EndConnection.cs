@@ -13,7 +13,7 @@ namespace StateMachine.States
 
         public override bool Condition()
         {
-            ParameterBool p = (ParameterBool)this.m_fsm.GetParameter("end");
+            ParameterBool p = (ParameterBool)this.m_fsm.GetParameter("End");
             if (p == null)
             {
                 return false;

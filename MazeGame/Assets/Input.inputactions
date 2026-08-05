@@ -34,13 +34,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "EndGame",
-                    "type": "Button",
+                    "name": "End",
+                    "type": "Value",
                     "id": "374da963-0460-4fa7-a184-11ed059770eb",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -128,7 +128,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "EndGame",
+                    "action": "End",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
