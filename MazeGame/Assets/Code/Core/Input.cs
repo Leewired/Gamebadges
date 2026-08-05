@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 namespace MazeGame.Core
 {
@@ -13,6 +14,9 @@ namespace MazeGame.Core
 		
 		public delegate void OnAcceptHandler();
         public event OnAcceptHandler OnAccept;
+
+		public delegate void OnEndHandler();
+		public event OnEndHandler OnEnd;
 
         public static Input instance = null;
 
@@ -42,6 +46,10 @@ namespace MazeGame.Core
 		{
             OnAccept?.Invoke();
         }
+		public void InputEnd()
+		{
+			OnEnd?.Invoke();
+		}
 
 	}
 }

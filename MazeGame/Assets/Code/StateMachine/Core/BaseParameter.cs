@@ -22,7 +22,6 @@ namespace StateMachine.Core
     public class ParameterString : BaseParameter
     {
         public string m_value;
-        public string m_name;
 
         public ParameterString(string name, string value) : base(name)
         {
@@ -34,7 +33,6 @@ namespace StateMachine.Core
     public class ParameterBool : BaseParameter
     {
         public bool m_value;
-        public string m_name;
 
         public ParameterBool(string name, bool value) : base(name)
         {

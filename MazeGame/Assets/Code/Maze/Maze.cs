@@ -108,11 +108,13 @@ namespace MazeGame.Maze
 
     public class Maze : MonoBehaviour
     {
+        
         private int m_seed = 0;
         private int m_iterations = 2000; //TODO: Make sure every room is connected.
         public Cell[] m_maze = null;
         private Vector2 m_size = Vector2.zero; //Vector2 is a struct that needs to have values
         private int[] m_indices;
+        [HideInInspector]
         public int m_indicesCount = 0;
         private Vector2[] m_directions =
         {
@@ -120,8 +122,8 @@ namespace MazeGame.Maze
         new Vector2(0, -1),
         new Vector2(1, 0),
         new Vector2(0, 1)
-    };
-
+        };
+        [Space(20)]
         public CellData m_cellData = null;
 
         public void GenerateMaze(int w, int h, int s, int i)

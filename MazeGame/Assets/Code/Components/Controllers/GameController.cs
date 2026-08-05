@@ -35,6 +35,7 @@ namespace MazeGame.Components.Controllers
             LoadingState loadingState = new LoadingState(m_stateMachine);
             IntroState introState = new IntroState(m_stateMachine);
             GameplayState gameplayState = new GameplayState(m_stateMachine);
+            EndState endState = new EndState(m_stateMachine);
 
             LoadingConnection loadingConnection = new LoadingConnection(m_stateMachine);
             loadingConnection.m_state = loadingState;
@@ -42,17 +43,20 @@ namespace MazeGame.Components.Controllers
             introConnection.m_state = introState;
             GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
             gameplayConnection.m_state = gameplayState;
+            EndConnection endConnection = new EndConnection(m_stateMachine);
+            endConnection.m_state = endState;
             
 
             initState.AddOutputConnection(loadingConnection);
             loadingState.AddOutputConnection(introConnection);
             introState.AddOutputConnection(gameplayConnection); 
+            gameplayState.AddOutputConnection(endConnection);
             
-            m_stateMachine.m_currentState = initState; //TODO: make sure loading screen loads on top of scene, disable movement not input
+            m_stateMachine.m_currentState = initState;
             m_stateMachine.StartStateMachine();
         }
 
-        private void Update() //TODO: use fixed update for reals
+        private void FixedUpdate() //TODO: use fixed update for reals
         {
             m_stateMachine.UpdateStateMachine();
         }

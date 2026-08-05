@@ -1,5 +1,6 @@
-using UnityEngine;
 using Mono.Data.Sqlite;
+using System.Xml.Linq;
+using UnityEngine;
 
 namespace MazeGame.Core
 {
@@ -24,7 +25,8 @@ namespace MazeGame.Core
     {
         public DialogueDatabase(
             string dbName = "Dialogue",
-            string dbFile = "URI=file:MazeGame_Data/Resources/Dialogue.db") : base(dbName, dbFile) //TODO: separate file path for Editor and Build
+            string dbFile = "URI=file:Assets/Resources/Dialogue.db") : base(dbName, dbFile) //TODO: separate file path for Editor and Build
+            //string dbFile = "URI=file:MazeGame_Data/Resources/Dialogue.db") : base(dbName, dbFile)
         {
         }
 

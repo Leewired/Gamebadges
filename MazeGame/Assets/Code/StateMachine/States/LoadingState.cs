@@ -21,20 +21,25 @@ namespace StateMachine.States
         {
             base.StartState();
             Game.m_dialogueDatabase = new DialogueDatabase();
-            SceneManager.LoadSceneAsync("Level", LoadSceneMode.Additive);
             SceneManager.LoadSceneAsync("Intro", LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("Level", LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync("End", LoadSceneMode.Additive);
         }
 
         public override void UpdateState()
         {
-            Scene s1 = SceneManager.GetSceneByName("Level");
-            Scene s2 = SceneManager.GetSceneByName("Intro"); //TODO: Load intro first
+            Scene s1 = SceneManager.GetSceneByName("Intro");
+            Scene s2 = SceneManager.GetSceneByName("Level");
+            Scene s3 = SceneManager.GetSceneByName("End"); //TODO: move end loading to later stage
+            
             //TODO: Add camera to intro
 
-            if (s1.isLoaded && s2.isLoaded)
+            if (s1.isLoaded && s2.isLoaded && s3.isLoaded)
             {
-                Game.m_levelController = (LevelController)Game.GetController(s1);
-                Game.m_introController = (IntroController)Game.GetController(s2);
+                Game.m_introController = (IntroController)Game.GetController(s1);
+                Game.m_levelController = (LevelController)Game.GetController(s2);
+                Game.m_endController = (EndController)Game.GetController(s3);
+                
                 if (Game.m_levelController != null)
                 {
                     PlayerComponent pc = GameObject.FindAnyObjectByType<PlayerComponent>();
@@ -45,8 +50,9 @@ namespace StateMachine.States
 
                     Game.m_levelController.Deactivate();
                     Game.m_introController.Deactivate();
+                    Game.m_endController.Deactivate();
 
-                    SceneManager.SetActiveScene(s1);
+                    SceneManager.SetActiveScene(s2);
                     //partial recreation of the maze due to not having acces to it anymore
                     Maze m = Game.m_levelController.m_visualRoot.GetComponentInChildren<Maze>();
                     if (m != null)
