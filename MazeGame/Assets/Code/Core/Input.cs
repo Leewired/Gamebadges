@@ -11,12 +11,14 @@ namespace MazeGame.Core
 		public event OnMoveHandler OnMove;
 		public delegate void OnLookHandler(Vector2 v);
 		public event OnLookHandler OnLook;
+		public delegate void OnJumpHandler();
+		public event OnJumpHandler OnJump;
 		
 		public delegate void OnAcceptHandler();
         public event OnAcceptHandler OnAccept;
 
-		public delegate void OnEndHandler();
-		public event OnEndHandler OnEnd;
+		public delegate void OnPauseHandler();
+		public event OnPauseHandler OnPause;
 
         public static Input instance = null;
 
@@ -42,13 +44,17 @@ namespace MazeGame.Core
 		{
             OnLook?.Invoke(v);
         }
+		public void InputJump() //TODO: add float parameter for jump height if needed
+        {
+            OnJump?.Invoke();
+        }
 		public void InputAccept()
 		{
             OnAccept?.Invoke();
         }
-		public void InputEnd()
+		public void InputPause()
 		{
-			OnEnd?.Invoke();
+			OnPause?.Invoke();
 		}
 
 	}

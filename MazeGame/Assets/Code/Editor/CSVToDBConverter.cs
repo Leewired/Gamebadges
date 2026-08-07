@@ -11,7 +11,7 @@ namespace MazeGame.Editor
     //TODO: UTF-8 encoding
     public class CSVToDBConverter
     {
-        [MenuItem("GameBadges/Convet CSV to DB")]
+        [MenuItem("GameBadges/Convert CSV to DB")]
         public static void ConvertCSV()
         {
             string csvDialogueFile = "Assets/Resources/Dialogue.csv";

@@ -16,6 +16,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "1fba82b9-695d-4ab9-83c8-485b14f8834f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Look",
                     "type": "Value",
                     "id": "b89fc124-4a86-4f9a-8967-826f074c3ab0",
@@ -34,8 +43,8 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "End",
-                    "type": "Value",
+                    "name": "Pause",
+                    "type": "Button",
                     "id": "374da963-0460-4fa7-a184-11ed059770eb",
                     "expectedControlType": "",
                     "processors": "",
@@ -128,7 +137,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "End",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "24290875-99e4-423f-9307-34b74f9a65eb",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

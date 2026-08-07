@@ -33,26 +33,26 @@ namespace MazeGame.Components
             //Debug.Log("Move input value detected.");
             m_moveVelocity = v.Get<Vector2>();
             m_moving = true;
-
         }
         public void OnLook(InputValue v)
         {
             //Debug.Log("Look input value detected.");
             Game.m_input.InputLook(v.Get<Vector2>());
         }
+        public void OnJump(InputValue v)
+        {
+            //Debug.Log("Jump input value detected.");
+            Game.m_input.InputJump();
+        }
         public void OnAccept(InputValue v)
         {
             //Debug.Log("Accept accepted.");
             Game.m_input.InputAccept();
         }
-        public void OnEnd(InputValue v)
+        public void OnPause(InputValue v)
         {
-            Debug.Log("End button pushed.");
-            Game.m_input.InputEnd();
+            //Debug.Log("Pause button pushed.");
+            Game.m_input.InputPause();
         }
-
-
     }
-
 }
-

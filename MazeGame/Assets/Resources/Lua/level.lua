@@ -1,11 +1,11 @@
-print("Level script printed, Hi!")
-
-
-	
 
 function OnDialogue(lineId)
 	local s = GetDialogueLine(1)
 	SetIntroText(s)
-	local e = GetDialogueLine(2)
-	SetEndText(e)
+	local p = GetDialogueLine(2)
+	SetPauseText(p)
+	local v = GetDialogueLine(3)
+	SetEndText(v)
+	local go = GetDialogueLine(4)
+	SetEndText(go)
 end

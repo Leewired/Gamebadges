@@ -26,9 +26,9 @@ namespace StateMachine.States.Enemy
 			{
 				m_isMoving = false;
 			}
+			//TODO: Set enemy position and destination at wanted intervals.
 			Game.m_gameData.m_enemyPosition = Game.m_enemy.m_comp.m_agent.transform.position;
 			Game.m_gameData.m_enemyDestination = Game.m_enemy.m_comp.m_agent.destination;
         }
-
     }
 }

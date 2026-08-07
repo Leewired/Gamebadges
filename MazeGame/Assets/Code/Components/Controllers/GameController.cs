@@ -35,6 +35,7 @@ namespace MazeGame.Components.Controllers
             LoadingState loadingState = new LoadingState(m_stateMachine);
             IntroState introState = new IntroState(m_stateMachine);
             GameplayState gameplayState = new GameplayState(m_stateMachine);
+            PauseState pauseState = new PauseState(m_stateMachine);
             EndState endState = new EndState(m_stateMachine);
 
             LoadingConnection loadingConnection = new LoadingConnection(m_stateMachine);
@@ -43,15 +44,21 @@ namespace MazeGame.Components.Controllers
             introConnection.m_state = introState;
             GameplayConnection gameplayConnection = new GameplayConnection(m_stateMachine);
             gameplayConnection.m_state = gameplayState;
+            PauseConnection pauseConnection = new PauseConnection(m_stateMachine);
+            pauseConnection.m_state = pauseState;
             EndConnection endConnection = new EndConnection(m_stateMachine);
             endConnection.m_state = endState;
             
-
             initState.AddOutputConnection(loadingConnection);
             loadingState.AddOutputConnection(introConnection);
             introState.AddOutputConnection(gameplayConnection); 
+            gameplayState.AddOutputConnection(pauseConnection);
+            pauseState.AddOutputConnection(gameplayConnection);
             gameplayState.AddOutputConnection(endConnection);
-            
+
+
+            m_stateMachine.AddParameter("Pause", false);
+
             m_stateMachine.m_currentState = initState;
             m_stateMachine.StartStateMachine();
         }

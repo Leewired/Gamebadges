@@ -23,20 +23,26 @@ namespace StateMachine.Core
         {
 
             //TODO: add check if existing parameter
+            /*
+            foreach (BaseParameter p in m_parameters)
+            {
+                if (p.m_name == name)
+                {
+                    return;
+                }
+            }
+            */
 
             if (value.GetType() == typeof(string))
             {
-
                 ParameterString p = new ParameterString(name, (string)value);
                 m_parameters.Add(p);
-
             }
+
             if (value.GetType() == typeof(bool))
             {
-
                 ParameterBool p = new ParameterBool(name, (bool)value);
                 m_parameters.Add(p);
-
             }
 
         }
@@ -53,19 +59,14 @@ namespace StateMachine.Core
             return null;
         }
 
-
         public void StartStateMachine()
         {
-
             m_update = true;
-
         }
 
         public void StopStateMachine()
         {
-
             m_update = false;
-
         }
 
         public void UpdateStateMachine()
