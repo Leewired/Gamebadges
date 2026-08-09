@@ -11,6 +11,7 @@ namespace MazeGame.Core
 		public bool m_onAir = false;
         public bool m_jumpAvailable = true;
 		public float m_surfaceDot = 0;
+		public Vector3 m_surfaceNormal = Vector3.zero;
 
         public Player(PlayerComponent comp)
 		{
@@ -35,7 +36,6 @@ namespace MazeGame.Core
             }
 			if (m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
 			{
-				Debug.Log($"Adding force: {f}");
 				m_rigidBody.AddForce(f, ForceMode.Force);
 				Game.m_gameData.m_playerPosition = m_rigidBody.position;
 			}
@@ -45,15 +45,34 @@ namespace MazeGame.Core
         {
             if (m_jumpAvailable)
             {
+				// TODO: Take slopes into account. Just calculate vectors from normals.
+				// TODO: add force divider, don't override values.
+				
+				float fu = 5f;
+				float ff = 1.5f;
+                float fn = 0f;
+
+                if ( 0.05 < m_rigidBody.linearVelocity.sqrMagnitude && m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
+                {
+                    m_rigidBody.AddForce(m_rigidBody.transform.forward * ff, ForceMode.Impulse);
+                }
+
                 if (m_surfaceDot > 0.5f)
                 {
-                    m_rigidBody.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+					Debug.Log("Floor jump");
+                    m_rigidBody.AddForce(Vector3.up * fu, ForceMode.Impulse);
 					return;
                 }
+
 				if (m_surfaceDot >= 0f)
 				{
-                    m_rigidBody.AddForce(Vector3.up * 3f, ForceMode.Impulse);
-                    m_rigidBody.AddForce(Vector3.forward * 2f, ForceMode.Impulse);
+                    Debug.Log("Wall jump");
+					//TODO: calculate force off the wall based on slope.
+                    fu = 3f;
+					fn = 2f;
+                    m_rigidBody.AddForce(Vector3.up * fu, ForceMode.Impulse);
+                    m_rigidBody.AddForce(m_surfaceNormal * fn, ForceMode.Impulse);
+					return;
                 }
             }
         }
