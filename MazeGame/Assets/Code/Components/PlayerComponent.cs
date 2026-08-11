@@ -29,26 +29,26 @@ namespace MazeGame.Components
             }
 
             currentCollisions.Add(collision);
-            Debug.Log($"New contact with: {collision.gameObject.name}");
-            Debug.Log($"Contact count: {currentCollisions.Count}");
+            Debug.Log($"Added collision with: {collision.gameObject.name}");
 
             UpdateCollisionData(newContactDot, newContactNormal);
         }
 
-        void OnCollisionExit(Collision collision) //other collision overwrites, so exit might not happen.
+        void OnCollisionExit(Collision collision)
         {
-            // TODO: re-evaluate currentDot and currentNormal.
-
             Debug.Log($"Exited contact with: {collision.gameObject.name}");
             currentCollisions.Remove(collision);
-            Debug.Log($"Contact count: {currentCollisions.Count}");
+            Debug.Log($"Removed collision with: {collision.gameObject.name}");
             CheckCurrentCollisions();
         }
 
         void CheckCurrentCollisions()
         {
+            Debug.Log($"Collisions count: {currentCollisions.Count}");
+
             if (currentCollisions.Count == 0) //no collisions, we are in the air.
             {
+                Debug.Log("No collisions");
                 currentContactDot = -1f;
                 currentContactNormal = Vector3.zero;
                 Game.m_player.m_onAir = true;
@@ -57,10 +57,20 @@ namespace MazeGame.Components
                 return;
             }
 
+            int i = 1;
             foreach (var collision in currentCollisions) //check all collisions to find the one with the highest dot product.
             {
+                Debug.Log($"Collision {i}: {collision.gameObject.name}.");
+                Debug.Log($"Contact count: {collision.contactCount}");
+                i++;
                 if (collision == null) return; //collision can be null if the object was destroyed.
-                if (collision.contactCount == 0) return; //contact count can be zero.
+                if (collision.contactCount == 0)
+                {
+                    Debug.Log($"Collision with {collision.gameObject.name} has no contacts.");
+                    continue; //contact count can be zero.
+                }
+
+                Debug.Log($"Collision with {collision.gameObject.name} has contacts.");
 
                 ContactPoint contact = collision.GetContact(0); //there shouldn't be multiple contacts in one collision.
                 Vector3 newContactNormal = contact.normal;
@@ -73,6 +83,7 @@ namespace MazeGame.Components
 
         void UpdateCollisionData(float contactDot, Vector3 contactNormal)
         {
+            //Debug.Log($"Updating collision data with dot: {contactDot}, normal: {contactNormal}");
             if (contactDot > currentContactDot) //we want to always use the contact with the highest dot product.
             {
                 currentContactDot = contactDot;
