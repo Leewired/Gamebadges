@@ -179,7 +179,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7768056299832770764}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 4338fd73c56da014e89cd016b96d7f29, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -188,7 +188,7 @@ SphereCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
@@ -231,4 +231,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 448666cc60889d240a2c7965e3657eec, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerComponent
+  m_EditorClassIdentifier: Assembly-CSharp::MazeGame.Components.PlayerComponent
+  m_jumpForce: 300
+  m_moveForce: 25
