@@ -1,7 +1,6 @@
 ﻿using MazeGame.Core;
 using UnityEngine;
 using MazeGame.Components;
-using Unity.VisualScripting;
 
 namespace MazeGame.Core
 {
@@ -21,7 +20,7 @@ namespace MazeGame.Core
 			this.m_characterInstance = comp.gameObject;
 			this.m_rigidBody = this.m_characterInstance.GetComponent<Rigidbody>();
 
-			this.m_jumpForce = comp.m_jumpForce;
+            this.m_jumpForce = comp.m_jumpForce;
             this.m_moveForce = comp.m_moveForce;
         }
 

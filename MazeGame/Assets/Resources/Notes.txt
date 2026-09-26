@@ -1,0 +1,6 @@
+Notes/TODO:
+
+Physics/walls:
+- wall physical material to control friction by comparison type
+- colliders to roof
+- need to spawn prefabs!

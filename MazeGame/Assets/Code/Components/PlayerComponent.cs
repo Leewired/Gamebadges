@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MazeGame.Core;
-using Unity.VisualScripting;
 
 namespace MazeGame.Components
 {
@@ -11,13 +10,14 @@ namespace MazeGame.Components
         public float m_moveForce = 1f;
         public float currentContactDot = -1f;
         public Vector3 currentContactNormal = Vector3.zero;
-        public List<Collision> currentCollisions = new List<Collision>();
+        public Dictionary<GameObject, (float dot, Vector3 normal)> currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
 
         private void OnCollisionEnter(Collision collision)
         {
             //Player component is loaded before assignment to game, so we need to check if player is null.
             if (Game.m_player == null) return;
 
+            //ContactPoint includes both colliders, normal and point
             ContactPoint contact = collision.GetContact(0); //there shouldn't be multiple contacts in one collision.
             Vector3 newContactNormal = contact.normal;
             float newContactDot = Vector3.Dot(newContactNormal, Vector3.up);
@@ -28,72 +28,50 @@ namespace MazeGame.Components
                 return;
             }
 
-            currentCollisions.Add(collision);
-            Debug.Log($"Added collision with: {collision.gameObject.name}");
-
-            UpdateCollisionData(newContactDot, newContactNormal);
+            currentContactObjects.Add(collision.gameObject, (newContactDot, newContactNormal));
+            UpdateCollisionData();
         }
 
         void OnCollisionExit(Collision collision)
         {
-            Debug.Log($"Exited contact with: {collision.gameObject.name}");
-            currentCollisions.Remove(collision);
-            Debug.Log($"Removed collision with: {collision.gameObject.name}");
-            CheckCurrentCollisions();
+            // Remove the contact object from the dictionary when the collision ends.
+            if (currentContactObjects.ContainsKey(collision.gameObject))
+            {
+                currentContactObjects.Remove(collision.gameObject);
+            }
+            UpdateCollisionData();
         }
 
-        void CheckCurrentCollisions()
+        (float dot, Vector3 normal) GetHighestContactDot() //return highest dot and matching normal.
         {
-            Debug.Log($"Collisions count: {currentCollisions.Count}");
-
-            if (currentCollisions.Count == 0) //no collisions, we are in the air.
+            float highestDot = -1f;
+            Vector3 matchingNormal = Vector3.zero;
+            foreach (var (dot, normal) in currentContactObjects.Values)
             {
-                Debug.Log("No collisions");
-                currentContactDot = -1f;
-                currentContactNormal = Vector3.zero;
+                if (dot > highestDot)
+                {
+                    highestDot = dot;
+                    matchingNormal = normal;
+                }
+            }
+            return (highestDot, matchingNormal);
+        }
+
+        void UpdateCollisionData()
+        {
+            var (dot, normal) = GetHighestContactDot();
+            currentContactDot = dot;
+            currentContactNormal = normal;
+            //GetHighest returns -1 as dot if there's no contacts.
+            if (currentContactDot == -1f)
+            {
                 Game.m_player.m_onAir = true;
                 Game.m_player.m_jumpAvailable = false;
-                Game.m_player.m_onWall = false;
+                Game.m_player.m_surfaceNormal = Vector3.zero;
                 return;
             }
 
-            int i = 1;
-            foreach (var collision in currentCollisions) //check all collisions to find the one with the highest dot product.
-            {
-                Debug.Log($"Collision {i}: {collision.gameObject.name}.");
-                Debug.Log($"Contact count: {collision.contactCount}");
-                i++;
-                if (collision == null) return; //collision can be null if the object was destroyed.
-                if (collision.contactCount == 0)
-                {
-                    Debug.Log($"Collision with {collision.gameObject.name} has no contacts.");
-                    continue; //contact count can be zero.
-                }
-
-                Debug.Log($"Collision with {collision.gameObject.name} has contacts.");
-
-                ContactPoint contact = collision.GetContact(0); //there shouldn't be multiple contacts in one collision.
-                Vector3 newContactNormal = contact.normal;
-                float newContactDot = Vector3.Dot(newContactNormal, Vector3.up);
-
-                UpdateCollisionData(newContactDot, newContactNormal);
-            }
-
-        }
-
-        void UpdateCollisionData(float contactDot, Vector3 contactNormal)
-        {
-            //Debug.Log($"Updating collision data with dot: {contactDot}, normal: {contactNormal}");
-            if (contactDot > currentContactDot) //we want to always use the contact with the highest dot product.
-            {
-                currentContactDot = contactDot;
-                currentContactNormal = contactNormal;
-            }
-            else
-            {
-                return;
-            }
-
+            //TODO: move logic to player, to calculate from normal
             if (currentContactDot < 0.01f) //we are on a wall.
             {
                 Game.m_player.m_onWall = true;
