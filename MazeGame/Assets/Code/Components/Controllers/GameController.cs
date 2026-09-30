@@ -63,7 +63,7 @@ namespace MazeGame.Components.Controllers
             m_stateMachine.StartStateMachine();
         }
 
-        private void FixedUpdate() //TODO: use fixed update for reals
+        private void FixedUpdate()
         {
             m_stateMachine.UpdateStateMachine();
         }

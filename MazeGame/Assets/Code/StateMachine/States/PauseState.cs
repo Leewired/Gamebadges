@@ -19,6 +19,8 @@ namespace StateMachine.States
             Game.m_input.OnPause += M_input_OnPause;
             m_gameplayParameter = m_stateMachine.GetParameter("Gameplay") as ParameterBool; // state machine gives as base parameter so we cast to bool which it is.
             m_gameplayParameter.m_value = false;
+            Game.m_gameData.m_playerHasKey = Game.m_player.m_hasKey;
+            Game.m_gameData.WriteData();
         }
 
         private void M_input_OnPause()

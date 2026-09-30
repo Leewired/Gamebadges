@@ -77,8 +77,9 @@ namespace StateMachine.States
                             }
                             cells[i].m_instancedGameObject = comps[i].gameObject;
                         }
-                        MeshRenderer mr = comps[0].gameObject.GetComponentInChildren<MeshRenderer>(); //setting on single wall affects all
-                        mr.sharedMaterial.SetColor("_Color", Settings.CreateInstance().m_color); //load color from settings
+                        MeshRenderer mr = comps[0].gameObject.GetComponentInChildren<MeshRenderer>(); //setting shared material on single wall affects all
+                        mr.sharedMaterial.SetColor("_Color", Settings.CreateInstance().m_color); //load color from settings //TODO: make sure material in settings up to date.
+                        Debug.Log($"{mr.name}: Color set to {mr.sharedMaterial.GetColor("_Color")}");
                         Game.m_maze.m_maze = cells;
                         Game.m_maze.m_indicesCount = cells.Length;
 

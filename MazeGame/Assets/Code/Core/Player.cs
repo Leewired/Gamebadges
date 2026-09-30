@@ -6,7 +6,8 @@ namespace MazeGame.Core
 {
 	public class Player: BaseCharacter
 	{
-		private Vector3 m_velocity = Vector3.zero;
+        public bool m_hasKey = false;
+        private Vector3 m_velocity = Vector3.zero;
 		public bool m_onAir = false;
 		public bool m_onWall = false;
         public bool m_jumpAvailable = true;
@@ -22,6 +23,7 @@ namespace MazeGame.Core
 
             this.m_jumpForce = comp.m_jumpForce;
             this.m_moveForce = comp.m_moveForce;
+            Game.m_gameData.m_playerHasKey = false;
         }
 
 		public void TurnPlayer(Vector2 mouseDelta)
@@ -68,16 +70,17 @@ namespace MazeGame.Core
         {
             if (m_jumpAvailable)
             {
-				// TODO: Take slopes into account. Just calculate vectors from normals.
-				// TODO: make sure end force is always upwards, even when falling.
+                // TODO: Take slopes into account. Just calculate vectors from normals.
+                // TODO: make sure end force is always upwards, even when falling.
 
-				/*
+                /*
                 if ( 0.05 < m_rigidBody.linearVelocity.sqrMagnitude && m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
                 {
                     m_rigidBody.AddForce(m_rigidBody.transform.forward * ff, ForceMode.Impulse);
                 }
 				*/
 
+                //TODO: Bug with direction/dot gets stuck to boost certain direction.
                 if (!m_onWall)
                 {
 					Debug.Log("Floor jump. Force: " + m_jumpForce);

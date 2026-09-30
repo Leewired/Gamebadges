@@ -5,35 +5,46 @@ using TMPro;
 public class EndController : BaseController
 {
 
-    public GameObject m_gameEnd = null;
-    private TextMeshProUGUI m_mazeText = null;
+    public GameObject m_gameOver = null;
+    private TextMeshProUGUI m_gameOverText = null;
+    public GameObject m_victory = null;
+    private TextMeshProUGUI m_victoryText = null;
 
     public override void Start()
     {
         base.Start();
-        this.m_gameEnd = GameObject.Find("GameEnd").gameObject;
-        m_mazeText = this.m_gameEnd.GetComponentInChildren<TextMeshProUGUI>();
+        this.m_gameOver = GameObject.Find("GameOver").gameObject;
+        this.m_victory = GameObject.Find("Victory").gameObject;
+        m_gameOverText = this.m_gameOver.GetComponentInChildren<TextMeshProUGUI>();
+        m_victoryText = this.m_victory.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     public override void Hide()
     {
-        m_gameEnd.SetActive(false);
+        m_gameOver.SetActive(false);
+        m_victory.SetActive(false);
     }
 
-    public override void Show()
+    public void ShowGameEnd(bool isVictory)
     {
-        m_gameEnd.SetActive(true);
+        this.Hide();
+        if (isVictory)
+        {
+            m_victory.SetActive(true);
+        }
+        else
+        {
+            m_gameOver.SetActive(true);
+        }
     }
 
-    public void ShowGameEnd()
+    public void SetGameOverText(string text)
     {
-        this.Hide(); //hide others
-        m_gameEnd.SetActive(true); //show this specific one
+        m_gameOverText.text = text;
     }
 
-    public void SetEndText(string text)
+    public void SetVictoryText(string text)
     {
-        m_mazeText.text = text;
+        m_victoryText.text = text;
     }
-
 }

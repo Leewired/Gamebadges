@@ -39,8 +39,10 @@ namespace MazeGame.Core
                 (Action<string>)SetIntroText;
             m_script.Globals["SetPauseText"] =
                 (Action<string>)SetPauseText;
-            m_script.Globals["SetEndText"] =
-                (Action<string>)SetEndText;
+            m_script.Globals["SetGameOverText"] =
+                (Action<string>)SetGameOverText;
+            m_script.Globals["SetVictoryText"] =
+                (Action<string>)SetVictoryText;
             //m_script.Globals["Vector3.PrintVector3Length"] = //This does not find the method
                 //(Action<string>)PrintVector3Length;
         }
@@ -87,11 +89,15 @@ namespace MazeGame.Core
             Game.m_pauseController.SetPauseText(text);
         }
 
-        private static void SetEndText(string text)
+        private static void SetGameOverText(string text)
         {
-            Game.m_endController.SetEndText(text);
+            Game.m_endController.SetGameOverText(text);
         }
 
+        private static void SetVictoryText(string text)
+        {
+            Game.m_endController.SetVictoryText(text);
+        }
 
         /*private static void PrintVector3Length(string text)
         {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MazeGame.Core;
+using StateMachine.Core;
 
 namespace MazeGame.Components
 {
@@ -16,6 +17,19 @@ namespace MazeGame.Components
         {
             //Player component is loaded before assignment to game, so we need to check if player is null.
             if (Game.m_player == null) return;
+
+            if(collision.gameObject.CompareTag("Key"))
+            {
+                Game.m_player.m_hasKey = true;
+                collision.gameObject.SetActive(false);
+                Debug.Log("KEY COLLECTED");
+            }
+
+            if (collision.gameObject.CompareTag("Exit") && Game.m_player.m_hasKey)
+            {
+                Game.m_player.m_hasKey = false;
+                Game.m_gameStateMachine.AddParameter("End", true); //TODO: clean logic
+            }
 
             //ContactPoint includes both colliders, normal and point
             ContactPoint contact = collision.GetContact(0); //there shouldn't be multiple contacts in one collision.
@@ -71,6 +85,7 @@ namespace MazeGame.Components
                 return;
             }
 
+            //TODO: Bug with direction/dot gets stuck to boost certain direction.
             //TODO: move logic to player, to calculate from normal
             if (currentContactDot < 0.01f) //we are on a wall.
             {

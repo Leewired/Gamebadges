@@ -32,7 +32,6 @@ namespace StateMachine.States
             //TODO: do it in a state
         }
 
-
         public override void UpdateState()
         {
             base.UpdateState();

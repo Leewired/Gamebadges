@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 220050279796292229}
   m_Layer: 0
   m_Name: Key
-  m_TagString: Untagged
+  m_TagString: Key
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &368951376490748792
 Transform:
@@ -105,6 +105,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4ce5a301cc6d21843a115e8c30f8369e, type: 3}
       propertyPath: m_Name
       value: keymesh
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ce5a301cc6d21843a115e8c30f8369e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -139,7 +139,7 @@ namespace MazeGame.Maze
             sw.Stop();
             CreateExit();
             CreateKey();
-            CreateInstances(); //TODO: instantiate prefabs?
+            CreateInstances();
             UnityEngine.Debug.Log(string.Format("Maze generated in: {0}ms", sw.ElapsedMilliseconds));
         }
 
@@ -152,7 +152,7 @@ namespace MazeGame.Maze
                 int r = UnityEngine.Random.Range(0, m_maze.Length);
                 if (m_maze[r].GetType() != typeof(WallCell))
                 {
-                    m_maze[r] = m_maze[r].ToExitCell(); //?
+                    m_maze[r] = m_maze[r].ToExitCell();
                     break;
                 }
                 if (c > 100)
