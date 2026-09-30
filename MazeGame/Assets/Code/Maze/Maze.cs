@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEditor;
 
 namespace MazeGame.Maze
 {
-    public class RoomCell : Cell //classes for handling 3D object in their separate classes
+    public class RoomCell : Cell //classes for handling 3D objects
     {
         public override GameObject CreateInstance(int mazeWidth)
         {
-            m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_roomPieces[0]);
+            //m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_roomPieces[0]);
+            m_instancedGameObject = (GameObject)PrefabUtility.InstantiatePrefab(m_cellData.m_roomPieces[0]);
             CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
             cc.m_floor = true;
             cc.m_index = m_yindex * mazeWidth * m_xindex;
@@ -21,7 +23,7 @@ namespace MazeGame.Maze
     {
         public override GameObject CreateInstance(int mazeWidth)
         {
-            m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_wallPieces[0]);
+            m_instancedGameObject = (GameObject)PrefabUtility.InstantiatePrefab(m_cellData.m_wallPieces[0]);
             CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
             cc.m_floor = false;
             cc.m_index = m_yindex * mazeWidth * m_xindex;
@@ -34,7 +36,7 @@ namespace MazeGame.Maze
     {
         public override GameObject CreateInstance(int mazeWidth)
         {
-            m_instancedGameObject = GameObject.Instantiate<GameObject>(m_cellData.m_exitPiece);
+            m_instancedGameObject = (GameObject)PrefabUtility.InstantiatePrefab(m_cellData.m_exitPiece);
             CellComponent cc = m_instancedGameObject.AddComponent<CellComponent>();
             cc.m_floor = true;
             cc.m_index = m_yindex * mazeWidth * m_xindex;
@@ -99,7 +101,7 @@ namespace MazeGame.Maze
             ConfigureInstance(m_instancedGameObject);
             if (this.m_key)
             {
-                GameObject go = GameObject.Instantiate<GameObject>(m_cellData.m_key);
+                GameObject go = (GameObject)PrefabUtility.InstantiatePrefab(m_cellData.m_key);
                 ConfigureInstance(go, isKey: true);
             }
             return m_instancedGameObject;
