@@ -13,8 +13,12 @@ namespace MazeGame.Core
         public bool m_jumpAvailable = true;
         public float m_jumpForce = 5f;
         public float m_moveForce = 1f;
+        public float m_maxSpeed = 100f;
+        public float m_wallJumpForceMultiplier = 1f;
+        public float m_wallUpwardsCounterMultiplier = 1f;
         public float m_surfaceDot = 0;
 		public Vector3 m_surfaceNormal = Vector3.zero;
+        public Vector3 m_currentLinearVelocity = Vector3.zero;
 
         public Player(PlayerComponent comp)
 		{
@@ -23,6 +27,9 @@ namespace MazeGame.Core
 
             this.m_jumpForce = comp.m_jumpForce;
             this.m_moveForce = comp.m_moveForce;
+            this.m_maxSpeed = comp.m_maxSpeed;
+            this.m_wallJumpForceMultiplier = comp.m_wallJumpForceMultiplier;
+            this.m_wallUpwardsCounterMultiplier = comp.m_wallUpwardsCounterMultiplier;
             Game.m_gameData.m_playerHasKey = false;
         }
 
@@ -36,13 +43,28 @@ namespace MazeGame.Core
 		{
             Vector3 v = new Vector3(wasd.x, 0f, wasd.y) * 10; // * Time.deltaTime;
             Vector3 f = m_rigidBody.transform.TransformVector(v) * m_moveForce;
+            m_currentLinearVelocity = m_rigidBody.linearVelocity;
 
             Debug.Log($"Player is on wall: {m_onWall}");
-           
-			if (m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
+
+            //TODO: Clean           
+			if (m_currentLinearVelocity.sqrMagnitude < m_maxSpeed) //100 is max speed, add only if we're under it
 			{
+                if (m_onAir)
+                {
+                    f *= 0.3f;
+                }
+                else if (m_currentLinearVelocity.sqrMagnitude < 0.1f) //If player is almost stopped, add more force
+                {
+                    f *= 2f;
+                }
+                else
+                {
+                    f *= 1f;
+                }
                 if (m_onWall)
                 {
+                    Debug.Log($"Current linear velocity: {m_currentLinearVelocity}");
                     float transformDot = Vector3.Dot(f, m_surfaceNormal);
                     //We could glue player to wall, and separate only with input or new collision enter.
                     if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
@@ -54,15 +76,16 @@ namespace MazeGame.Core
                         m_rigidBody.AddForce(f, ForceMode.Force);
                     }
                 }
-                else if (m_onAir)
-                {
-                    m_rigidBody.AddForce(f * 0.3f, ForceMode.Force); //Add less force on air.
-                }
                 else
                 {
+                    //Check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
+                    if(Vector3.Dot(f, m_currentLinearVelocity) < 0f)
+                    {
+                        f *= 1.5f;
+                    }
                     m_rigidBody.AddForce(f, ForceMode.Force);
                 }
-				Game.m_gameData.m_playerPosition = m_rigidBody.position;
+				Game.m_gameData.m_playerPosition = m_rigidBody.position; //save to gameData
 			}
 		}
 
@@ -80,7 +103,6 @@ namespace MazeGame.Core
                 }
 				*/
 
-                //TODO: Bug with direction/dot gets stuck to boost certain direction.
                 if (!m_onWall)
                 {
 					Debug.Log("Floor jump. Force: " + m_jumpForce);
@@ -92,8 +114,18 @@ namespace MazeGame.Core
                 {
                     Debug.Log("Wall jump");
                     //TODO: calculate force off the wall based on slope.
-                    m_rigidBody.AddForce(Vector3.up * m_jumpForce, ForceMode.Impulse);
+                    //check is linear velocity is downwards and if so add linear multiplier based on the velocity downwards
+                    if (m_currentLinearVelocity.y < 0f)
+                    {
+                        m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallUpwardsCounterMultiplier), ForceMode.Impulse);
+                        Debug.Log($"Force added: {Vector3.up * m_jumpForce * m_wallJumpForceMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallUpwardsCounterMultiplier)}");
+                    }
+                    else
+                    {
+                        m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceMultiplier, ForceMode.Impulse);
+                    }
                     m_rigidBody.AddForce(m_surfaceNormal * m_jumpForce * 0.5f, ForceMode.Impulse);
+                    Debug.Log($"{m_surfaceNormal} Normal");
                     return;
                 }
             }

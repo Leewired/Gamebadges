@@ -236,5 +236,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MazeGame.Components.PlayerComponent
   m_jumpForce: 300
   m_moveForce: 10
+  m_maxSpeed: 100
+  m_wallJumpForceMultiplier: 1
+  m_wallUpwardsCounterMultiplier: 20
   currentContactDot: -1
   currentContactNormal: {x: 0, y: 0, z: 0}

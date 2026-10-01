@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MazeGame.Core;
-using StateMachine.Core;
 
 namespace MazeGame.Components
 {
@@ -9,9 +8,12 @@ namespace MazeGame.Components
     {
         public float m_jumpForce = 5f;
         public float m_moveForce = 1f;
-        public float currentContactDot = -1f;
-        public Vector3 currentContactNormal = Vector3.zero;
-        public Dictionary<GameObject, (float dot, Vector3 normal)> currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
+        public float m_maxSpeed = 100f;
+        public float m_wallJumpForceMultiplier = 1f;
+        public float m_wallUpwardsCounterMultiplier = 1f;
+        private float currentContactDot = -1f;
+        private Vector3 currentContactNormal = Vector3.zero;
+        private Dictionary<GameObject, (float dot, Vector3 normal)> currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -23,12 +25,14 @@ namespace MazeGame.Components
                 Game.m_player.m_hasKey = true;
                 collision.gameObject.SetActive(false);
                 Debug.Log("KEY COLLECTED");
+                return;
             }
 
             if (collision.gameObject.CompareTag("Exit") && Game.m_player.m_hasKey)
             {
                 Game.m_player.m_hasKey = false;
                 Game.m_gameStateMachine.AddParameter("End", true); //TODO: clean logic
+                return;
             }
 
             //ContactPoint includes both colliders, normal and point
