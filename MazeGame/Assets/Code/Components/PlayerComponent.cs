@@ -19,9 +19,11 @@ namespace MazeGame.Components
         public float m_wallJumpForceForwardsMultiplier = 0.2f;
         public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
         public float m_rotationSpeedMultiplier = 0.2f;
-        private float currentContactDot = -1f;
-        private Vector3 currentContactNormal = Vector3.zero;
-        private Dictionary<GameObject, (float dot, Vector3 normal)> currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
+        private float m_currentContactDot = -1f;
+        private float m_lowestContactDot = 1f;
+        private Vector3 m_currentContactNormal = Vector3.zero;
+        private Vector3 m_lowestContactNormal = Vector3.zero;
+        private Dictionary<GameObject, (float dot, Vector3 normal)> m_currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -62,16 +64,16 @@ namespace MazeGame.Components
                 return;
             }
 
-            currentContactObjects.Add(collision.gameObject, (newContactDot, newContactNormal));
+            m_currentContactObjects.Add(collision.gameObject, (newContactDot, newContactNormal));
             UpdateCollisionData();
         }
 
         void OnCollisionExit(Collision collision)
         {
             // Remove the contact object from the dictionary when the collision ends.
-            if (currentContactObjects.ContainsKey(collision.gameObject))
+            if (m_currentContactObjects.ContainsKey(collision.gameObject))
             {
-                currentContactObjects.Remove(collision.gameObject);
+                m_currentContactObjects.Remove(collision.gameObject);
             }
             UpdateCollisionData();
         }
@@ -80,7 +82,7 @@ namespace MazeGame.Components
         {
             float highestDot = -1f;
             Vector3 matchingNormal = Vector3.zero;
-            foreach (var (dot, normal) in currentContactObjects.Values)
+            foreach (var (dot, normal) in m_currentContactObjects.Values)
             {
                 if (dot > highestDot)
                 {
@@ -91,13 +93,28 @@ namespace MazeGame.Components
             return (highestDot, matchingNormal);
         }
 
+        (float dot, Vector3 normal) GetLowestContactDot() //return lowest dot and matching normal.
+        {
+            float lowestDot = 1f;
+            Vector3 matchingNormal = Vector3.zero;
+            foreach (var (dot, normal) in m_currentContactObjects.Values)
+            {
+                if (dot < lowestDot)
+                {
+                    lowestDot = dot;
+                    matchingNormal = normal;
+                }
+            }
+            return (lowestDot, matchingNormal);
+        }
+
         void UpdateCollisionData()
         {
-            var (dot, normal) = GetHighestContactDot();
-            currentContactDot = dot;
-            currentContactNormal = normal;
+            var (hDot, hNormal) = GetHighestContactDot();
+            m_currentContactDot = hDot;
+            m_currentContactNormal = hNormal;
             //GetHighest returns -1 as dot if there's no contacts.
-            if (currentContactDot == -1f)
+            if (m_currentContactDot == -1f)
             {
                 Debug.Log("In the air!");
                 Game.m_player.m_onAir = true;
@@ -105,20 +122,25 @@ namespace MazeGame.Components
                 Game.m_player.m_surfaceNormal = Vector3.zero;
                 return;
             }
+            var (lDot, lNormal) = GetLowestContactDot();
+            m_lowestContactDot = lDot;
+            m_lowestContactNormal = lNormal;
 
             //TODO: move logic to player, to calculate from normal
-            if (currentContactDot < 0.01f) //we are on a wall.
+            if (m_currentContactDot < 0.01f) //we are on a wall.
             {
                 Game.m_player.m_onWall = true;
             }
-            else if (currentContactDot >= 0.01f) //we are on the ground.
+            else if (m_currentContactDot >= 0.01f) //we are on the ground.
             {
                 Game.m_player.m_onWall = false;
             }
             Game.m_player.m_onAir = false;
             Game.m_player.m_jumpAvailable = true;
-            Game.m_player.m_surfaceDot = currentContactDot;
-            Game.m_player.m_surfaceNormal = currentContactNormal;
+            Game.m_player.m_surfaceDot = m_currentContactDot;
+            Game.m_player.m_surfaceNormal = m_currentContactNormal;
+            Game.m_player.m_lowestContactDot = m_lowestContactDot;
+            Game.m_player.m_lowestContactNormal = m_lowestContactNormal;
         }
     }
 }

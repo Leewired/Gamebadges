@@ -26,7 +26,9 @@ namespace MazeGame.Core
         public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
         public float m_rotationSpeedMultiplier = 0.2f;
         public float m_surfaceDot = 0;
-		public Vector3 m_surfaceNormal = Vector3.zero;
+        public Vector3 m_surfaceNormal = Vector3.zero;
+        public float m_lowestContactDot = 1f;
+        public Vector3 m_lowestContactNormal = Vector3.zero;
         public Vector3 m_currentLinearVelocity = Vector3.zero;
 
         public Player(PlayerComponent comp)
@@ -77,8 +79,10 @@ namespace MazeGame.Core
             }
             if (m_onWall)
             {
+                Debug.Log("On the wall.");
                 float transformDot = Vector3.Dot(f, m_surfaceNormal);
                 //We could glue player to wall, and separate only with input or new collision enter.
+                //TODO: add force to push along wall
                 if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
                 {
                     m_rigidBody.AddForce(f - (m_surfaceNormal * transformDot), ForceMode.Force);
@@ -90,12 +94,25 @@ namespace MazeGame.Core
             }
             else
             {
-                //Check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
+                //check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
                 if(Vector3.Dot(f, m_currentLinearVelocity) < 0f)
                 {
                     f *= m_counterForceMultiplier;
                 }
-                m_rigidBody.AddForce(f, ForceMode.Force);
+                if (m_lowestContactDot == 1f || m_lowestContactDot == m_surfaceDot)//there's no other contact
+                {
+                    m_rigidBody.AddForce(f, ForceMode.Force);
+                    return;
+                }
+                float secondColliderDot = Vector3.Dot(f, m_lowestContactNormal);
+                if (secondColliderDot < 0f) //If negative dot product, we are pushing towards the wall.
+                {
+                    m_rigidBody.AddForce(f - (m_lowestContactNormal * secondColliderDot), ForceMode.Force);
+                }
+                else
+                {
+                    m_rigidBody.AddForce(f, ForceMode.Force);
+                }
             }
 
 			Game.m_gameData.m_playerPosition = m_rigidBody.position; //save to gameData
@@ -125,7 +142,7 @@ namespace MazeGame.Core
                 //check if linear velocity is downwards, to add counter force
                 if (m_currentLinearVelocity.y < 0f)
                 {
-                    //Add upwards force based on the current downward velocity to always jump upwards
+                    //add upwards force based on the current downward velocity to always jump upwards
                     m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceUpwardsMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallJumpForceUpwardsCounterMultiplier), ForceMode.Impulse);
                 }
                 else
