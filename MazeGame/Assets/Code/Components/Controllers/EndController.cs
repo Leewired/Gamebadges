@@ -25,17 +25,17 @@ public class EndController : BaseController
         m_victory.SetActive(false);
     }
 
-    public void ShowGameEnd(bool isVictory)
+    public void ShowVictory()
     {
         this.Hide();
-        if (isVictory)
-        {
-            m_victory.SetActive(true);
-        }
-        else
-        {
-            m_gameOver.SetActive(true);
-        }
+        m_victory.SetActive(true);
+
+    }
+
+    public void ShowGameOver()
+    {
+        this.Hide();
+        m_gameOver.SetActive(true);
     }
 
     public void SetGameOverText(string text)

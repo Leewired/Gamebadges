@@ -26,7 +26,7 @@ namespace StateMachine.States
             Game.m_player.Start();
             Game.m_enemy.Start();
             Game.m_gameData.m_scene = Game.m_levelController.gameObject.scene;
-            Game.m_gameData.LoadData();
+            Game.m_gameData.LoadData(); //TODo: loading for loading's sake.
             //TODO: Add write to a button or game closing etc.
             //TODO: set player data based on load data
             //TODO: do it in a state

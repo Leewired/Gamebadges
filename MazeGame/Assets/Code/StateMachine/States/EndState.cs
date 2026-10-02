@@ -13,8 +13,18 @@ namespace StateMachine.States
         public override void StartState()
         {
             base.StartState();
-            Game.m_endController.ShowGameEnd(true); //TODO: make this a parameter for win or lose
-            Game.m_gameData.m_playerHasKey = Game.m_player.m_hasKey;
+            if(Game.m_player.m_playerBeatLevel)
+            {
+                Game.m_endController.ShowVictory();
+            }
+            else
+            {
+                Game.m_endController.ShowGameOver();
+            }
+            //reset game data
+            Game.m_player.m_playerBeatLevel = false;
+            Game.m_gameData.m_playerHasKey = false;
+            Game.m_gameData.m_playerBeatLevel = false;
             Game.m_gameData.WriteData();
         }
 

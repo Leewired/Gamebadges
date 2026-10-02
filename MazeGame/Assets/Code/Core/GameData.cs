@@ -11,6 +11,7 @@ namespace MazeGame.Core
         public Vector3 m_playerPosition = Vector3.zero;
         public Quaternion m_playerRotation = Quaternion.identity;
         public bool m_playerHasKey = false;
+        public bool m_playerBeatLevel = false;
         public Vector3 m_enemyPosition = Vector3.zero;
         public Vector3 m_enemyDestination = Vector3.zero;
 
@@ -31,6 +32,7 @@ namespace MazeGame.Core
             bw.Write(m_playerRotation.z);
             bw.Write(m_playerRotation.w);
             bw.Write(m_playerHasKey);
+            bw.Write(m_playerBeatLevel);
             bw.Write(m_enemyPosition.x);
             bw.Write(m_enemyPosition.y);
             bw.Write(m_enemyPosition.z);
@@ -43,7 +45,7 @@ namespace MazeGame.Core
 
             fileStream.Close();
 
-            Debug.Log($"Saved Data to {filePath}, player: {m_playerPosition}, key: {m_playerHasKey}");
+            Debug.Log($"Saved Data to {filePath}");
         }
 
         public void LoadData()
@@ -65,6 +67,7 @@ namespace MazeGame.Core
             float protw = br.ReadSingle();
             m_playerRotation = new Quaternion(protx, proty, protz, protw);
             m_playerHasKey = br.ReadBoolean();
+            m_playerBeatLevel = br.ReadBoolean();
             float eposx = br.ReadSingle();
             float eposy = br.ReadSingle();
             float eposz = br.ReadSingle();
@@ -76,7 +79,7 @@ namespace MazeGame.Core
 
             br.Close();
             fileStream.Close();
-            Debug.Log($"Loaded Data. Player: {m_playerPosition}, Key: {m_playerHasKey}"); //add breakpoint to view values here
+            Debug.Log($"Loaded Data to {filePath}");
         }
 
     }

@@ -6,11 +6,19 @@ namespace MazeGame.Components
 {
     public class PlayerComponent : MonoBehaviour
     {
-        public float m_jumpForce = 5f;
-        public float m_moveForce = 1f;
+        public float m_jumpForce = 300f;
+        public float m_moveForce = 10f;
         public float m_maxSpeed = 100f;
-        public float m_wallJumpForceMultiplier = 1f;
-        public float m_wallUpwardsCounterMultiplier = 1f;
+        public float m_maxUpwardsSpeed = 20f;
+        public float m_airForceMultiplier = 0.3f;
+        public float m_lowVelocityThreshold = 0.1f;
+        public float m_lowVelocityForceMultiplier = 2f;
+        public float m_counterForceMultiplier = 1.5f;
+        public float m_wallJumpForceUpwardsMultiplier = 1f;
+        public float m_wallJumpForceOutwardsMultiplier = 0.5f;
+        public float m_wallJumpForceForwardsMultiplier = 0.2f;
+        public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
+        public float m_rotationSpeedMultiplier = 0.2f;
         private float currentContactDot = -1f;
         private Vector3 currentContactNormal = Vector3.zero;
         private Dictionary<GameObject, (float dot, Vector3 normal)> currentContactObjects = new Dictionary<GameObject, (float, Vector3)>();
@@ -31,6 +39,14 @@ namespace MazeGame.Components
             if (collision.gameObject.CompareTag("Exit") && Game.m_player.m_hasKey)
             {
                 Game.m_player.m_hasKey = false;
+                Game.m_player.m_playerBeatLevel = true;
+                Game.m_gameStateMachine.AddParameter("End", true); //TODO: clean logic
+                return;
+            }
+
+            if (collision.gameObject.CompareTag("Enemy"))
+            {
+                Debug.Log("AHHH! You caught me!");
                 Game.m_gameStateMachine.AddParameter("End", true); //TODO: clean logic
                 return;
             }

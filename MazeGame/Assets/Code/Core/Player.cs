@@ -7,15 +7,24 @@ namespace MazeGame.Core
 	public class Player: BaseCharacter
 	{
         public bool m_hasKey = false;
+        public bool m_playerBeatLevel = false;
         private Vector3 m_velocity = Vector3.zero;
 		public bool m_onAir = false;
 		public bool m_onWall = false;
         public bool m_jumpAvailable = true;
-        public float m_jumpForce = 5f;
-        public float m_moveForce = 1f;
+        public float m_jumpForce = 300f;
+        public float m_moveForce = 10f;
         public float m_maxSpeed = 100f;
-        public float m_wallJumpForceMultiplier = 1f;
-        public float m_wallUpwardsCounterMultiplier = 1f;
+        public float m_airForceMultiplier = 0.3f;
+        public float m_maxUpwardsSpeed = 20f;
+        public float m_lowVelocityThreshold = 0.1f;
+        public float m_lowVelocityForceMultiplier = 2f;
+        public float m_counterForceMultiplier = 1.5f;
+        public float m_wallJumpForceUpwardsMultiplier = 1f;
+        public float m_wallJumpForceOutwardsMultiplier = 0.5f;
+        public float m_wallJumpForceForwardsMultiplier = 0.2f;
+        public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
+        public float m_rotationSpeedMultiplier = 0.2f;
         public float m_surfaceDot = 0;
 		public Vector3 m_surfaceNormal = Vector3.zero;
         public Vector3 m_currentLinearVelocity = Vector3.zero;
@@ -28,14 +37,20 @@ namespace MazeGame.Core
             this.m_jumpForce = comp.m_jumpForce;
             this.m_moveForce = comp.m_moveForce;
             this.m_maxSpeed = comp.m_maxSpeed;
-            this.m_wallJumpForceMultiplier = comp.m_wallJumpForceMultiplier;
-            this.m_wallUpwardsCounterMultiplier = comp.m_wallUpwardsCounterMultiplier;
-            Game.m_gameData.m_playerHasKey = false;
+            this.m_wallJumpForceUpwardsMultiplier = comp.m_wallJumpForceUpwardsMultiplier;
+            this.m_wallJumpForceUpwardsCounterMultiplier = comp.m_wallJumpForceUpwardsCounterMultiplier;
+            this.m_rotationSpeedMultiplier = comp.m_rotationSpeedMultiplier;
+            this.m_airForceMultiplier = comp.m_airForceMultiplier;
+            this.m_lowVelocityForceMultiplier = comp.m_lowVelocityForceMultiplier;
+            this.m_lowVelocityThreshold = comp.m_lowVelocityThreshold;
+            this.m_counterForceMultiplier = comp.m_counterForceMultiplier;
+            this.m_maxUpwardsSpeed = comp.m_maxUpwardsSpeed;
+            this.m_wallJumpForceForwardsMultiplier = comp.m_wallJumpForceForwardsMultiplier;
         }
 
 		public void TurnPlayer(Vector2 mouseDelta)
 		{
-			m_characterInstance.transform.Rotate(0, mouseDelta.x * 0.2f, 0f); //TODO: add x rotation for looking up and down 
+			m_characterInstance.transform.Rotate(0, mouseDelta.x * m_rotationSpeedMultiplier, 0f); //TODO: add x rotation for looking up and down 
             Game.m_gameData.m_playerRotation = m_characterInstance.transform.rotation;
 		}
 
@@ -52,11 +67,11 @@ namespace MazeGame.Core
 			{
                 if (m_onAir)
                 {
-                    f *= 0.3f;
+                    f *= m_airForceMultiplier;
                 }
-                else if (m_currentLinearVelocity.sqrMagnitude < 0.1f) //If player is almost stopped, add more force
+                else if (m_currentLinearVelocity.sqrMagnitude < m_lowVelocityThreshold) //If player is almost stopped, add more force
                 {
-                    f *= 2f;
+                    f *= m_lowVelocityForceMultiplier;
                 }
                 else
                 {
@@ -64,7 +79,6 @@ namespace MazeGame.Core
                 }
                 if (m_onWall)
                 {
-                    Debug.Log($"Current linear velocity: {m_currentLinearVelocity}");
                     float transformDot = Vector3.Dot(f, m_surfaceNormal);
                     //We could glue player to wall, and separate only with input or new collision enter.
                     if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
@@ -81,7 +95,7 @@ namespace MazeGame.Core
                     //Check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
                     if(Vector3.Dot(f, m_currentLinearVelocity) < 0f)
                     {
-                        f *= 1.5f;
+                        f *= m_counterForceMultiplier;
                     }
                     m_rigidBody.AddForce(f, ForceMode.Force);
                 }
@@ -91,43 +105,37 @@ namespace MazeGame.Core
 
 		public void JumpPlayer()
         {
-            if (m_jumpAvailable)
+            if (!m_jumpAvailable) return;
+
+            // TODO: Take slopes into account. Just calculate vectors from normals.
+            // TODO: add max velocity upwards
+
+            // TODO: check if we're pushing w (or s) and if so, add more force forwards to the jump.
+            // add force forwards
+            if ( 0.05 < m_rigidBody.linearVelocity.sqrMagnitude && m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
             {
-                // TODO: Take slopes into account. Just calculate vectors from normals.
-                // TODO: make sure end force is always upwards, even when falling.
+                m_rigidBody.AddForce(m_rigidBody.transform.forward * m_wallJumpForceForwardsMultiplier, ForceMode.Impulse);
+            }
 
-                /*
-                if ( 0.05 < m_rigidBody.linearVelocity.sqrMagnitude && m_rigidBody.linearVelocity.sqrMagnitude < 100f) //100 is max speed, add only if we're under it
+            if (!m_onWall)
+            {
+                m_rigidBody.AddForce(Vector3.up * m_jumpForce, ForceMode.Impulse);
+            }
+            else
+            {
+                //TODO: calculate force off the wall based on slope.
+                //check if linear velocity is downwards, to add counter force
+                if (m_currentLinearVelocity.y < 0f)
                 {
-                    m_rigidBody.AddForce(m_rigidBody.transform.forward * ff, ForceMode.Impulse);
+                    //Add upwards force based on the current downward velocity to always jump upwards
+                    m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceUpwardsMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallJumpForceUpwardsCounterMultiplier), ForceMode.Impulse);
                 }
-				*/
-
-                if (!m_onWall)
-                {
-					Debug.Log("Floor jump. Force: " + m_jumpForce);
-                    m_rigidBody.AddForce(Vector3.up * m_jumpForce, ForceMode.Impulse);
-					return;
-                }
-
                 else
                 {
-                    Debug.Log("Wall jump");
-                    //TODO: calculate force off the wall based on slope.
-                    //check is linear velocity is downwards and if so add linear multiplier based on the velocity downwards
-                    if (m_currentLinearVelocity.y < 0f)
-                    {
-                        m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallUpwardsCounterMultiplier), ForceMode.Impulse);
-                        Debug.Log($"Force added: {Vector3.up * m_jumpForce * m_wallJumpForceMultiplier + (new Vector3(0f, -m_currentLinearVelocity.y, 0f) * m_wallUpwardsCounterMultiplier)}");
-                    }
-                    else
-                    {
-                        m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceMultiplier, ForceMode.Impulse);
-                    }
-                    m_rigidBody.AddForce(m_surfaceNormal * m_jumpForce * 0.5f, ForceMode.Impulse);
-                    Debug.Log($"{m_surfaceNormal} Normal");
-                    return;
+                    m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceUpwardsMultiplier, ForceMode.Impulse);
                 }
+                //Add force outwards of the wall
+                m_rigidBody.AddForce(m_surfaceNormal * m_jumpForce * m_wallJumpForceOutwardsMultiplier, ForceMode.Impulse);
             }
         }
 

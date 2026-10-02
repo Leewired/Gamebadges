@@ -43,7 +43,7 @@ Camera:
   m_GameObject: {fileID: 2299197347411777240}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -67,7 +67,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 100
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -234,10 +234,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448666cc60889d240a2c7965e3657eec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MazeGame.Components.PlayerComponent
-  m_jumpForce: 300
-  m_moveForce: 10
-  m_maxSpeed: 100
-  m_wallJumpForceMultiplier: 1
-  m_wallUpwardsCounterMultiplier: 20
-  currentContactDot: -1
-  currentContactNormal: {x: 0, y: 0, z: 0}
+  m_jumpForce: 275
+  m_moveForce: 15
+  m_maxSpeed: 75
+  m_maxUpwardsSpeed: 20
+  m_airForceMultiplier: 0.3
+  m_lowVelocityThreshold: 0.1
+  m_lowVelocityForceMultiplier: 2
+  m_counterForceMultiplier: 1.5
+  m_wallJumpForceUpwardsMultiplier: 1
+  m_wallJumpForceOutwardsMultiplier: 0.5
+  m_wallJumpForceForwardsMultiplier: 0.2
+  m_wallJumpForceUpwardsCounterMultiplier: 20
+  m_rotationSpeedMultiplier: 0.075
