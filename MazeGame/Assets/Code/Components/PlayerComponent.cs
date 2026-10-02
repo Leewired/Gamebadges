@@ -99,13 +99,13 @@ namespace MazeGame.Components
             //GetHighest returns -1 as dot if there's no contacts.
             if (currentContactDot == -1f)
             {
+                Debug.Log("In the air!");
                 Game.m_player.m_onAir = true;
                 Game.m_player.m_jumpAvailable = false;
                 Game.m_player.m_surfaceNormal = Vector3.zero;
                 return;
             }
 
-            //TODO: Bug with direction/dot gets stuck to boost certain direction.
             //TODO: move logic to player, to calculate from normal
             if (currentContactDot < 0.01f) //we are on a wall.
             {

@@ -60,47 +60,45 @@ namespace MazeGame.Core
             Vector3 f = m_rigidBody.transform.TransformVector(v) * m_moveForce;
             m_currentLinearVelocity = m_rigidBody.linearVelocity;
 
-            Debug.Log($"Player is on wall: {m_onWall}");
-
             //TODO: Clean           
-			if (m_currentLinearVelocity.sqrMagnitude < m_maxSpeed) //100 is max speed, add only if we're under it
-			{
-                if (m_onAir)
+            if (m_currentLinearVelocity.sqrMagnitude >= m_maxSpeed) return; //100 is max speed, add only if we're under it
+			
+            if (m_onAir)
+            {
+                f *= m_airForceMultiplier;
+            }
+            else if (m_currentLinearVelocity.sqrMagnitude < m_lowVelocityThreshold) //If player is almost stopped, add more force
+            {
+                f *= m_lowVelocityForceMultiplier;
+            }
+            else
+            {
+                f *= 1f;
+            }
+            if (m_onWall)
+            {
+                float transformDot = Vector3.Dot(f, m_surfaceNormal);
+                //We could glue player to wall, and separate only with input or new collision enter.
+                if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
                 {
-                    f *= m_airForceMultiplier;
-                }
-                else if (m_currentLinearVelocity.sqrMagnitude < m_lowVelocityThreshold) //If player is almost stopped, add more force
-                {
-                    f *= m_lowVelocityForceMultiplier;
-                }
-                else
-                {
-                    f *= 1f;
-                }
-                if (m_onWall)
-                {
-                    float transformDot = Vector3.Dot(f, m_surfaceNormal);
-                    //We could glue player to wall, and separate only with input or new collision enter.
-                    if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
-                    {
-                        m_rigidBody.AddForce(f - (m_surfaceNormal * transformDot), ForceMode.Force);
-                    }
-                    else
-                    {
-                        m_rigidBody.AddForce(f, ForceMode.Force);
-                    }
+                    m_rigidBody.AddForce(f - (m_surfaceNormal * transformDot), ForceMode.Force);
                 }
                 else
                 {
-                    //Check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
-                    if(Vector3.Dot(f, m_currentLinearVelocity) < 0f)
-                    {
-                        f *= m_counterForceMultiplier;
-                    }
                     m_rigidBody.AddForce(f, ForceMode.Force);
                 }
-				Game.m_gameData.m_playerPosition = m_rigidBody.position; //save to gameData
-			}
+            }
+            else
+            {
+                //Check if we're pushing against our current direction and if so, add a multiplier to the force to make it easier to turn around.
+                if(Vector3.Dot(f, m_currentLinearVelocity) < 0f)
+                {
+                    f *= m_counterForceMultiplier;
+                }
+                m_rigidBody.AddForce(f, ForceMode.Force);
+            }
+
+			Game.m_gameData.m_playerPosition = m_rigidBody.position; //save to gameData
 		}
 
 		public void JumpPlayer()
@@ -121,7 +119,7 @@ namespace MazeGame.Core
             {
                 m_rigidBody.AddForce(Vector3.up * m_jumpForce, ForceMode.Impulse);
             }
-            else
+            else //we are on the wall
             {
                 //TODO: calculate force off the wall based on slope.
                 //check if linear velocity is downwards, to add counter force
@@ -134,7 +132,7 @@ namespace MazeGame.Core
                 {
                     m_rigidBody.AddForce(Vector3.up * m_jumpForce * m_wallJumpForceUpwardsMultiplier, ForceMode.Impulse);
                 }
-                //Add force outwards of the wall
+                //add force outwards of the wall
                 m_rigidBody.AddForce(m_surfaceNormal * m_jumpForce * m_wallJumpForceOutwardsMultiplier, ForceMode.Impulse);
             }
         }
@@ -146,7 +144,6 @@ namespace MazeGame.Core
 
 		public void Stop()
 		{
-			Debug.Log($"Rigidbody velocity: {m_rigidBody.linearVelocity}");
             m_velocity = m_rigidBody.linearVelocity; //store velocity for continued action when resuming
             m_rigidBody.linearVelocity = Vector3.zero;
         }
