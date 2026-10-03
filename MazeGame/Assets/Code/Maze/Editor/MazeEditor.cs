@@ -67,7 +67,6 @@ public class MazeEditor : EditorWindow //Class type EditorWindow
 
     private void B_clicked() //Create maze button clicked
     {
-        Debug.Log("Clicked");
         GameObject o = new GameObject("Maze"); //Create GameObject called maze
         this.m_maze = o.AddComponent<Maze>(); //Add Maze component/script
         Object ob = AssetDatabase.LoadAssetAtPath("Assets/Data/celldata.asset", typeof(CellData)); //TODO: Warn if no cell data.

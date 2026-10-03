@@ -107,7 +107,8 @@ namespace MazeGame.Core
                 float secondColliderDot = Vector3.Dot(f, m_lowestContactNormal);
                 if (secondColliderDot < 0f) //If negative dot product, we are pushing towards the wall.
                 {
-                    m_rigidBody.AddForce(f - (m_lowestContactNormal * secondColliderDot), ForceMode.Force);
+                    m_rigidBody.AddForce((f - (m_lowestContactNormal * secondColliderDot)) * 2f, ForceMode.Force); //TODO: add multiplier based on the dot product.
+                    Debug.Log($"Force: {f - (m_lowestContactNormal * secondColliderDot) * 2f}");
                 }
                 else
                 {

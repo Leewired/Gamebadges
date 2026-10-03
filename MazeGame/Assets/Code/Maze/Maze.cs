@@ -114,7 +114,7 @@ namespace MazeGame.Maze
         private int m_seed = 0;
         private int m_iterations = 2000; //TODO: Make sure every room is connected.
         public Cell[] m_maze = null;
-        private Vector2 m_size = Vector2.zero; //Vector2 is a struct that needs to have values
+        public Vector2 m_size = Vector2.zero; //Vector2 is a struct that needs to have values
         private int[] m_indices;
         [HideInInspector]
         public int m_indicesCount = 0;
@@ -140,6 +140,7 @@ namespace MazeGame.Maze
             CreateExit();
             CreateKey();
             CreateInstances();
+            CreateColliders();
             UnityEngine.Debug.Log(string.Format("Maze generated in: {0}ms", sw.ElapsedMilliseconds));
         }
 
@@ -196,6 +197,109 @@ namespace MazeGame.Maze
             }
         }
 
+        private void CreateColliders()
+        {
+            int index = 0;
+            int row = (int)this.m_size.y;
+
+            Dictionary<int, Cell[]> xDict = new Dictionary<int, Cell[]>();
+            Dictionary<int, List<Cell>> yDict = new Dictionary<int, List<Cell>>();
+
+            int xIndex = 0;
+            int yIndex = 0;
+
+            foreach (Cell cell in m_maze)
+            {
+                index++;
+                bool hasWallToLeft = false;
+                bool hasWallToRight = false;
+                bool hasWallAbove = false;
+                bool hasWallBelow = false;
+
+                if (cell.GetType() != typeof(WallCell))
+                {
+                    continue;
+                    /*BoxCollider bc = cell.m_instancedGameObject.AddComponent<BoxCollider>();
+                    bc.size = new Vector3(cell.m_size.x, 1f, cell.m_size.y);
+                    bc.center = new Vector3(0f, 0.5f, 0f);*/
+                }
+                UnityEngine.Debug.Log($"{index}: Cell: {cell.GetType().Name}, X index: {cell.m_xindex}, Y index: {cell.m_yindex}");
+
+                if (!CheckForWallCellsEachSide(index, out hasWallToLeft, out hasWallToRight, out hasWallAbove, out hasWallBelow))
+                {
+                    continue;
+                }
+
+                //fill xDictionary with groups of wall cells that are adjacent to each other
+                if (hasWallToRight || hasWallToLeft)
+                {
+                    xDict.Add(xIndex, new Cell[] { cell }); //TODO: don't add the same key twice
+                    // add to x list
+                }
+                else
+                {
+                    xIndex++;
+                }
+                /*
+                if (hasWallToLeft && hasWallAbove && hasWallToRight && hasWallBelow)
+                {
+                    continue;
+                }
+                if (hasWallBelow || hasWallAbove)
+                {
+                    yDict.Add(yIndex, new List<Cell>() { cell });
+                    // add to y list
+                }
+                */
+            }
+            foreach(var kvp in xDict)
+            {
+                UnityEngine.Debug.Log($"X Index: {kvp.Key}, Cells: {kvp.Value.Length}");
+            }
+        }
+
+        private bool CheckForWallCellsEachSide(int index, out bool hasWallToLeft, out bool hasWallToRight, out bool hasWallAbove, out bool hasWallBelow)
+        {
+            hasWallToLeft = false;
+            hasWallToRight = false;
+            hasWallAbove = false;
+            hasWallBelow = false;
+
+            int left = index - 1;
+            int right = index + 1;
+            int up = index - Mathf.FloorToInt(this.m_size.x);
+            int down = index + Mathf.FloorToInt(this.m_size.x);
+            if (left > -1 && left < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
+            {
+                hasWallToLeft = CheckIfCellIsWall(left);
+            }
+            if (right > -1 && right < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
+            {
+                hasWallToRight = CheckIfCellIsWall(right);
+            }
+            if (up > -1 && up < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
+            {
+                hasWallAbove = CheckIfCellIsWall(up);
+            }
+            if (down > -1 && down < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
+            {
+                hasWallBelow = CheckIfCellIsWall(down);
+            }
+            return true;
+        }
+
+        private bool CheckIfCellIsWall(int index)
+        {
+            if (index < 0 || index >= m_maze.Length)
+            {
+                return false;
+            }
+            if (m_maze[index].GetType() == typeof(WallCell))
+            {
+                return true;
+            }
+            return false;
+        }
 
         private bool IsInQueue(Queue<int> lst, int index) //check if it's already in Queue 
         {
