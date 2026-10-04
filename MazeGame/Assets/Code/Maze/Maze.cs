@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace MazeGame.Maze
 {
@@ -140,6 +140,7 @@ namespace MazeGame.Maze
             CreateExit();
             CreateKey();
             CreateInstances();
+            UnityEngine.Debug.Log($"Maze length: {m_maze.Length}");
             CreateColliders();
             UnityEngine.Debug.Log(string.Format("Maze generated in: {0}ms", sw.ElapsedMilliseconds));
         }
@@ -199,18 +200,87 @@ namespace MazeGame.Maze
 
         private void CreateColliders()
         {
+            Dictionary<int, Cell[]> xDict = CreateXDict();
+            Dictionary<int, Cell[]> collToBottomDict = CreatecollToBottomDict();
+        }
+
+        private Dictionary<int, Cell[]> CreateXDict()
+        {
+            // initial dictionary of wall groups, where the key is the xIndex and the value is a list of wall cells that are adjacent to each other
             int index = 0;
-            int row = (int)this.m_size.y;
+            int cYIndex;
+            int oldCYIndex = 0;
 
             Dictionary<int, Cell[]> xDict = new Dictionary<int, Cell[]>();
-            Dictionary<int, List<Cell>> yDict = new Dictionary<int, List<Cell>>();
+            //Dictionary<int, List<Cell>> yDict = new Dictionary<int, List<Cell>>();
 
             int xIndex = 0;
-            int yIndex = 0;
+
+            bool previousWasRoom = false;
 
             foreach (Cell cell in m_maze)
             {
+                //UnityEngine.Debug.Log($"{index}: Cell: {cell.GetType().Name}, X index: {cell.m_xindex}, Y index: {cell.m_yindex}");
+
+                if (cell.GetType() != typeof(WallCell))
+                {
+                    if (!previousWasRoom)
+                    {
+                        xIndex++;
+                        //UnityEngine.Debug.Log($"Room, new xIndex: {xIndex}");
+                    }
+                    previousWasRoom = true;
+                    index++;
+                    continue;
+                }
+
+                cYIndex = cell.m_yindex;
+                if (cYIndex != oldCYIndex)
+                {
+                    xIndex++;
+                    oldCYIndex = cYIndex;
+                    //UnityEngine.Debug.Log($"Next row, new xIndex: {xIndex}");
+                }
+
+                //fill xDictionary with groups of wall cells that are adjacent to each other
+                if (!xDict.ContainsKey(xIndex))
+                {
+                    xDict.Add(xIndex, new Cell[] { cell }); //add to xDictionary
+                    //UnityEngine.Debug.Log($"Added new xDict key: {xIndex}");
+                }
+                else
+                {
+                    List<Cell> tempList = new List<Cell>(xDict[xIndex]);
+                    tempList.Add(cell);
+                    xDict[xIndex] = tempList.ToArray();
+                    //UnityEngine.Debug.Log($"Added cell to existing xDict key: {xIndex}");
+                }
+                
+                previousWasRoom = false;
                 index++;
+            }
+            foreach(var kvp in xDict)
+            {
+                UnityEngine.Debug.Log($"X Index: {kvp.Key}, Cells: {kvp.Value.Length}");
+            }
+            
+            return xDict;
+        }
+        private Dictionary<int, Cell[]> CreatecollToBottomDict()
+        {
+            // these walls need collider to bottom side.
+            int index = 0;
+            int oldCYIndex = 0;
+
+            Dictionary<int, Cell[]> collToBottomDict = new Dictionary<int, Cell[]>();
+
+            int xTBIndex = 0;
+
+            bool previousWasRoom = false;
+            bool previousHadWallBelow = false;
+
+            foreach (Cell cell in m_maze)
+            {
                 bool hasWallToLeft = false;
                 bool hasWallToRight = false;
                 bool hasWallAbove = false;
@@ -218,73 +288,81 @@ namespace MazeGame.Maze
 
                 if (cell.GetType() != typeof(WallCell))
                 {
+                    previousWasRoom = true;
+                    index++;
                     continue;
-                    /*BoxCollider bc = cell.m_instancedGameObject.AddComponent<BoxCollider>();
-                    bc.size = new Vector3(cell.m_size.x, 1f, cell.m_size.y);
-                    bc.center = new Vector3(0f, 0.5f, 0f);*/
                 }
-                UnityEngine.Debug.Log($"{index}: Cell: {cell.GetType().Name}, X index: {cell.m_xindex}, Y index: {cell.m_yindex}");
 
                 if (!CheckForWallCellsEachSide(index, out hasWallToLeft, out hasWallToRight, out hasWallAbove, out hasWallBelow))
                 {
+                    UnityEngine.Debug.LogWarning("Wall check failed.");
+                    index++;
                     continue;
                 }
 
-                //fill xDictionary with groups of wall cells that are adjacent to each other
-                if (hasWallToRight || hasWallToLeft)
+                if (hasWallBelow)
                 {
-                    xDict.Add(xIndex, new Cell[] { cell }); //TODO: don't add the same key twice
-                    // add to x list
-                }
-                else
-                {
-                    xIndex++;
-                }
-                /*
-                if (hasWallToLeft && hasWallAbove && hasWallToRight && hasWallBelow)
-                {
+                    previousHadWallBelow = true;
+                    index++;
                     continue;
                 }
-                if (hasWallBelow || hasWallAbove)
+
+                int cYIndex = cell.m_yindex;
+
+                if (previousWasRoom || previousHadWallBelow || cYIndex != oldCYIndex)
                 {
-                    yDict.Add(yIndex, new List<Cell>() { cell });
-                    // add to y list
+                    xTBIndex++;
+                    if (cYIndex != oldCYIndex)
+                    {
+                        oldCYIndex = cYIndex;
+                    }
                 }
-                */
+
+                if (!hasWallBelow)
+                {
+                    if (!collToBottomDict.ContainsKey(xTBIndex))
+                    {
+                        collToBottomDict.Add(xTBIndex, new Cell[] { cell });
+                        //UnityEngine.Debug.Log($"{index}: Added new collToBottomDict key: {xTBIndex}");
+                    }
+                    else
+                    {
+                        List<Cell> tempList = new List<Cell>(collToBottomDict[xTBIndex]);
+                        tempList.Add(cell);
+                        collToBottomDict[xTBIndex] = tempList.ToArray();
+                        //UnityEngine.Debug.Log($"{index}: Added cell to existing collToBottomDict key: {xTBIndex}");
+                    }
+                    previousHadWallBelow = false;
+                }
+                previousWasRoom = false;
+                index++;
             }
-            foreach(var kvp in xDict)
+
+            foreach (var kvp in collToBottomDict)
             {
-                UnityEngine.Debug.Log($"X Index: {kvp.Key}, Cells: {kvp.Value.Length}");
+                UnityEngine.Debug.Log($"CollToBottomDict X Index: {kvp.Key}, Cells: {kvp.Value.Length}");
             }
+            return collToBottomDict;
         }
 
         private bool CheckForWallCellsEachSide(int index, out bool hasWallToLeft, out bool hasWallToRight, out bool hasWallAbove, out bool hasWallBelow)
         {
+            //returns true if checks don't fail
             hasWallToLeft = false;
             hasWallToRight = false;
             hasWallAbove = false;
             hasWallBelow = false;
 
-            int left = index - 1;
-            int right = index + 1;
-            int up = index - Mathf.FloorToInt(this.m_size.x);
-            int down = index + Mathf.FloorToInt(this.m_size.x);
-            if (left > -1 && left < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
-            {
-                hasWallToLeft = CheckIfCellIsWall(left);
-            }
-            if (right > -1 && right < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
-            {
-                hasWallToRight = CheckIfCellIsWall(right);
-            }
-            if (up > -1 && up < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
-            {
-                hasWallAbove = CheckIfCellIsWall(up);
-            }
-            if (down > -1 && down < Mathf.FloorToInt(this.m_size.x * this.m_size.y)) //check if we're inside the area
-            {
-                hasWallBelow = CheckIfCellIsWall(down);
-            }
+            int w = (int)this.m_size.x;
+            int indLeft = index - 1;
+            int indRight = index + 1;
+            int indUp = index + w;
+            int indDown = index - w;
+            
+            hasWallToLeft = CheckIfCellIsWall(indLeft);
+            hasWallToRight = CheckIfCellIsWall(indRight); //TODO: Check if we move to the next row, if so, don't check right.
+            hasWallAbove = CheckIfCellIsWall(indUp);
+            hasWallBelow = CheckIfCellIsWall(indDown);
             return true;
         }
 
@@ -292,10 +370,12 @@ namespace MazeGame.Maze
         {
             if (index < 0 || index >= m_maze.Length)
             {
+                //UnityEngine.Debug.Log("Out of bounds index: " + index.ToString());
                 return false;
             }
             if (m_maze[index].GetType() == typeof(WallCell))
             {
+                //UnityEngine.Debug.Log("OK index: " + index.ToString());
                 return true;
             }
             return false;
@@ -435,10 +515,10 @@ namespace MazeGame.Maze
 
         private void IterateMaze()
         {
-            Random.InitState(m_seed);
+            UnityEngine.Random.InitState(m_seed);
             for (int i = 0; i < m_iterations; ++i)
             {
-                int index = Random.Range(0, m_maze.Length);
+                int index = UnityEngine.Random.Range(0, m_maze.Length);
                 FindRooms(index);
             }
         }
