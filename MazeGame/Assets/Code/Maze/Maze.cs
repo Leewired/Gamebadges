@@ -48,7 +48,7 @@ namespace MazeGame.Maze
     public class Cell
     {
         public CellData m_cellData = null;
-        public Vector2 m_size = Vector2.one;
+        public Vector3 m_size = Vector3.one;
         public GameObject m_instancedGameObject = null;
         public int m_xindex = 0;
         public int m_yindex = 0;
@@ -87,13 +87,13 @@ namespace MazeGame.Maze
             Mesh msh = mf.sharedMesh;
             if (!isKey)
             {
-                this.m_size = new Vector2(msh.bounds.size.x, msh.bounds.size.y);
+                this.m_size = new Vector3(msh.bounds.size.x, msh.bounds.size.y, msh.bounds.size.z);
             }
 
             instance.transform.position = new Vector3(
                 m_xindex * m_size.x,
                 0f,
-                m_yindex * m_size.y);
+                m_yindex * m_size.y); //TODO: meshes come in rotated, so y = z, z = y. Fix this.
         }
 
         virtual public GameObject CreateInstance(int mazeWidth) //overridable
@@ -179,7 +179,6 @@ namespace MazeGame.Maze
                         m_maze[r].m_key = true;
                         break;
                     }
-
                 }
                 if (c > 100)
                 {
@@ -191,17 +190,76 @@ namespace MazeGame.Maze
 
         private void CreateInstances()
         {
+            GameObject wallsParent = new GameObject("Walls");
+            wallsParent.transform.parent = this.transform;
+            GameObject roomsParent = new GameObject("Rooms");
+            roomsParent.transform.parent = this.transform;
+
             foreach (Cell cell in m_maze)
             {
                 cell.CreateInstance(Mathf.FloorToInt(this.m_size.x));
-                cell.m_instancedGameObject.transform.parent = this.transform;
+                if (cell.GetType() == typeof(WallCell))
+                {
+                    cell.m_instancedGameObject.transform.parent = wallsParent.transform;
+                }
+                else if (cell.GetType() == typeof(RoomCell))
+                {
+                    cell.m_instancedGameObject.transform.parent = roomsParent.transform;
+                }
+                else
+                {
+                    cell.m_instancedGameObject.transform.parent = this.transform;
+                }
             }
         }
 
         private void CreateColliders()
         {
-            Dictionary<int, Cell[]> xDict = CreateXDict();
-            Dictionary<int, Cell[]> collToBottomDict = CreatecollToBottomDict();
+            //Dictionary<int, Cell[]> xDict = CreateXDict();
+            GameObject collidersParent = new GameObject("Colliders");
+            collidersParent.transform.parent = this.transform;
+
+            Dictionary<int, Cell[]> collToBottomDict = CreateCollToBottomDict();            
+
+            GameObject bottomColliders = CreateCollidersFromDict(collToBottomDict, "Bottom");
+            bottomColliders.transform.parent = collidersParent.transform;
+            
+        }
+
+        private GameObject CreateCollidersFromDict(Dictionary<int, Cell[]> groupedCellsDict, string suffix)
+        {
+            GameObject colliderSetParent = new GameObject($"Colliders_{suffix}");
+
+            foreach (var kvp in groupedCellsDict)
+            {
+                int xIndex = kvp.Key;
+                Cell[] wallCells = kvp.Value;
+                if (wallCells.Length == 0)
+                {
+                    continue;
+                }
+                // Create a new GameObject to hold the collider
+                GameObject colliderObject = new GameObject($"Collider_{suffix}_{xIndex}");
+                colliderObject.transform.parent = colliderSetParent.transform;
+                // Add a BoxCollider component
+                BoxCollider boxCollider = colliderObject.AddComponent<BoxCollider>();
+                // Calculate the bounds of the wall cells
+                Vector3 min = wallCells[0].m_instancedGameObject.transform.position;
+                Vector3 max = min;
+                foreach (Cell wallCell in wallCells)
+                {
+                    Vector3 pos = wallCell.m_instancedGameObject.transform.position;
+                    min = Vector3.Min(min, pos);
+                    max = Vector3.Max(max, pos);
+                }
+                // Set the transform of the parent to the center of the bounds
+                // middle transform position, + bbox size / 2, - bbox size / 4
+                // meshes come in rotated, so y = z, z = y. Fix this.
+                colliderObject.transform.position = new Vector3((min.x + max.x) / 2f, (min.y + max.y) / 2f + wallCells[0].m_size.z / 2f, ((min.z + max.z) / 2f - wallCells[0].m_size.y / 4f));
+                boxCollider.size = new Vector3(max.x - min.x + wallCells[0].m_size.x, wallCells[0].m_size.z, (max.z - min.z + wallCells[0].m_size.y / 2f)); //TODO: mesh rot
+                boxCollider.center = Vector3.zero;
+            }
+            return colliderSetParent;
         }
 
         private Dictionary<int, Cell[]> CreateXDict()
@@ -266,11 +324,11 @@ namespace MazeGame.Maze
             
             return xDict;
         }
-        private Dictionary<int, Cell[]> CreatecollToBottomDict()
+        private Dictionary<int, Cell[]> CreateCollToBottomDict()
         {
             // these walls need collider to bottom side.
             int index = 0;
-            int oldCYIndex = 0;
+            int oldCellYIndex = 0;
 
             Dictionary<int, Cell[]> collToBottomDict = new Dictionary<int, Cell[]>();
 
@@ -309,12 +367,12 @@ namespace MazeGame.Maze
 
                 int cYIndex = cell.m_yindex;
 
-                if (previousWasRoom || previousHadWallBelow || cYIndex != oldCYIndex)
+                if (previousWasRoom || previousHadWallBelow || cYIndex != oldCellYIndex)
                 {
                     xTBIndex++;
-                    if (cYIndex != oldCYIndex)
+                    if (cYIndex != oldCellYIndex)
                     {
-                        oldCYIndex = cYIndex;
+                        oldCellYIndex = cYIndex;
                     }
                 }
 
@@ -347,7 +405,9 @@ namespace MazeGame.Maze
 
         private bool CheckForWallCellsEachSide(int index, out bool hasWallToLeft, out bool hasWallToRight, out bool hasWallAbove, out bool hasWallBelow)
         {
-            //returns true if checks don't fail
+            //returns true if checks don't fail.
+            //we check over the row, but we always know the edges of the maze are walls.
+            //we could also ignore the edges and get without checking.
             hasWallToLeft = false;
             hasWallToRight = false;
             hasWallAbove = false;
@@ -360,7 +420,7 @@ namespace MazeGame.Maze
             int indDown = index - w;
             
             hasWallToLeft = CheckIfCellIsWall(indLeft);
-            hasWallToRight = CheckIfCellIsWall(indRight); //TODO: Check if we move to the next row, if so, don't check right.
+            hasWallToRight = CheckIfCellIsWall(indRight);
             hasWallAbove = CheckIfCellIsWall(indUp);
             hasWallBelow = CheckIfCellIsWall(indDown);
             return true;
