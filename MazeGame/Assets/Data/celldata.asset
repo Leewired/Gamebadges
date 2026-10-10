@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CellData
   m_wallPieces:
   - {fileID: 1506580768674593764, guid: 29564d45457a7164cac55b6279021123, type: 3}
+  m_wallPieceColliders:
+  - {fileID: 6250197235781403332, guid: 855476bc7b083c0489c7e87e548d2fc6, type: 3}
   m_roomPieces:
   - {fileID: 8688982147424508776, guid: 17359e2633882274795032541d92721f, type: 3}
   m_exitPiece: {fileID: 2089691405862040516, guid: 83327b456d847c74ea78f03aafae2a19, type: 3}

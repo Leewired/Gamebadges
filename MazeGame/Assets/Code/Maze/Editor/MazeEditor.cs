@@ -39,7 +39,7 @@ public class MazeEditor : EditorWindow //Class type EditorWindow
     public void CreateGUI() //create GUI and populate it
     {
         VisualElement root = rootVisualElement; //root of your tab
-        Label label = new Label("Maze Editor 0.0.1.");
+        Label label = new Label("Maze Editor 0.0.2.");
         root.Add(label);
 
         GroupBox groupBox = new GroupBox("Maze settings");
