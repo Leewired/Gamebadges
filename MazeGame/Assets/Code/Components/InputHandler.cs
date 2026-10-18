@@ -41,8 +41,13 @@ namespace MazeGame.Components
         }
         public void OnJump(InputValue v)
         {
-            //Debug.Log("Jump input value detected.");
+            //Debug.Log("Jump input detected.");
             Game.m_input.InputJump();
+        }
+        public void OnSlide(InputValue v)
+        {
+            //Debug.Log("Slide input detected.");
+            Game.m_input.InputSlide();
         }
         public void OnAccept(InputValue v)
         {

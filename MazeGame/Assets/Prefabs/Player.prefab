@@ -234,16 +234,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448666cc60889d240a2c7965e3657eec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MazeGame.Components.PlayerComponent
-  m_jumpForce: 275
+  m_rotationSpeedMultiplier: 0.075
   m_moveForce: 15
   m_maxSpeed: 75
-  m_maxUpwardsSpeed: 20
-  m_airForceMultiplier: 0.3
   m_lowVelocityThreshold: 0.1
   m_lowVelocityForceMultiplier: 2
   m_counterForceMultiplier: 1.5
+  m_jumpForce: 275
+  m_maxUpwardsSpeed: 20
+  m_airForceMultiplier: 0.3
   m_wallJumpForceUpwardsMultiplier: 1
   m_wallJumpForceOutwardsMultiplier: 0.5
   m_wallJumpForceForwardsMultiplier: 0.2
   m_wallJumpForceUpwardsCounterMultiplier: 20
-  m_rotationSpeedMultiplier: 0.075
+  m_slideForce: 50
+  cameraLerpSpeed: 1

@@ -1,30 +1,49 @@
 ﻿using MazeGame.Core;
 using UnityEngine;
 using MazeGame.Components;
+using System;
 
 namespace MazeGame.Core
 {
 	public class Player: BaseCharacter
 	{
+        //Game state
         public bool m_hasKey = false;
         public bool m_playerBeatLevel = false;
+
+        //Movement state
         private Vector3 m_velocity = Vector3.zero;
+        private Vector3 m_currentMovementVector = Vector3.zero;
 		public bool m_onAir = false;
 		public bool m_onWall = false;
         public bool m_jumpAvailable = true;
-        public float m_jumpForce = 300f;
+        public bool m_sliding = false;
+
+        //Movement data from component
+        //Movement
+        public float m_rotationSpeedMultiplier = 0.2f;
         public float m_moveForce = 10f;
         public float m_maxSpeed = 100f;
-        public float m_airForceMultiplier = 0.3f;
-        public float m_maxUpwardsSpeed = 20f;
         public float m_lowVelocityThreshold = 0.1f;
         public float m_lowVelocityForceMultiplier = 2f;
         public float m_counterForceMultiplier = 1.5f;
+
+        //Jumping
+        public float m_jumpForce = 300f;
+        public float m_maxUpwardsSpeed = 20f;
+        public float m_airForceMultiplier = 0.3f;
+
+        //Wall
         public float m_wallJumpForceUpwardsMultiplier = 1f;
         public float m_wallJumpForceOutwardsMultiplier = 0.5f;
         public float m_wallJumpForceForwardsMultiplier = 0.2f;
         public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
-        public float m_rotationSpeedMultiplier = 0.2f;
+
+        //Slide
+        public float m_slideForce = 150f;
+        public float m_slideMovementForceMultiplier = 0.6f;
+
+        //Contacts
         public float m_surfaceDot = 0;
         public Vector3 m_surfaceNormal = Vector3.zero;
         public float m_lowestContactDot = 1f;
@@ -37,6 +56,8 @@ namespace MazeGame.Core
 			this.m_rigidBody = this.m_characterInstance.GetComponent<Rigidbody>();
 
             this.m_jumpForce = comp.m_jumpForce;
+            this.m_slideForce = comp.m_slideForce;
+            this.m_slideMovementForceMultiplier = comp.m_slideMovementForceMultiplier;
             this.m_moveForce = comp.m_moveForce;
             this.m_maxSpeed = comp.m_maxSpeed;
             this.m_wallJumpForceUpwardsMultiplier = comp.m_wallJumpForceUpwardsMultiplier;
@@ -58,8 +79,8 @@ namespace MazeGame.Core
 
 		public void MovePlayer(Vector2 wasd)
 		{
-            Vector3 v = new Vector3(wasd.x, 0f, wasd.y) * 10; // * Time.deltaTime;
-            Vector3 f = m_rigidBody.transform.TransformVector(v) * m_moveForce;
+            m_currentMovementVector = new Vector3(wasd.x, 0f, wasd.y) * 10; // * Time.deltaTime;
+            Vector3 f = m_rigidBody.transform.TransformVector(m_currentMovementVector) * m_moveForce;
             m_currentLinearVelocity = m_rigidBody.linearVelocity;
 
             //TODO: Clean           
@@ -68,6 +89,10 @@ namespace MazeGame.Core
             if (m_onAir)
             {
                 f *= m_airForceMultiplier;
+            }
+            else if (m_sliding)
+            {
+                f *= m_slideMovementForceMultiplier; //swap later
             }
             else if (m_currentLinearVelocity.sqrMagnitude < m_lowVelocityThreshold) //If player is almost stopped, add more force
             {
@@ -82,6 +107,7 @@ namespace MazeGame.Core
                 Debug.Log("On the wall.");
                 float transformDot = Vector3.Dot(f, m_surfaceNormal);
                 //We could glue player to wall, and separate only with input or new collision enter.
+                //TODO: remove outwards force unless pushing wasd outwards, jumping (and later getting hit)
                 //TODO: add force to push along wall
                 if (transformDot < 0f) //If negative dot product, we are pushing towards the wall.
                 {
@@ -122,6 +148,10 @@ namespace MazeGame.Core
 		public void JumpPlayer()
         {
             if (!m_jumpAvailable) return;
+            if (m_sliding)
+            {
+                m_sliding = false;
+            }
 
             // TODO: Take slopes into account. Just calculate vectors from normals.
             // TODO: add max velocity upwards
@@ -155,6 +185,16 @@ namespace MazeGame.Core
             }
         }
 
+        public void SlidePlayer()
+        {
+            if (!m_sliding && !m_onAir)
+            {
+                m_sliding = true;
+                Vector3 f = m_rigidBody.transform.TransformVector(m_currentMovementVector) * m_slideForce;
+                m_rigidBody.AddForce(f, ForceMode.Impulse);
+            }
+        }
+
         public void Start()
 		{
 			m_rigidBody.linearVelocity = m_velocity;
@@ -165,6 +205,6 @@ namespace MazeGame.Core
             m_velocity = m_rigidBody.linearVelocity; //store velocity for continued action when resuming
             m_rigidBody.linearVelocity = Vector3.zero;
         }
-		
+
     }
 }

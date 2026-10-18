@@ -148,10 +148,9 @@ namespace MazeGame.Maze
             CreateExit();
             CreateKey();
             CreateInstances();
-            UnityEngine.Debug.Log($"Maze length: {m_maze.Length}");
             MergeInstances();
             CreateColliders();
-            wallsParent.SetActive(false);
+            wallsParent.SetActive(false); //for now, might delete later
             UnityEngine.Debug.Log(string.Format("Maze generated in: {0}ms", sw.ElapsedMilliseconds));
         }
 
@@ -228,6 +227,7 @@ namespace MazeGame.Maze
 
         private void MergeInstances()
         {
+            // merge all walls for performance
             GameObject wallsMerged = new GameObject("MergedWalls");
             wallsMerged.transform.parent = this.transform;
             wallsMerged.transform.localPosition = Vector3.zero;
@@ -250,13 +250,15 @@ namespace MazeGame.Maze
                 {
                     continue;
                 }
-                combine[i] = new CombineInstance();
-                combine[i].mesh = mf.sharedMesh;
-                combine[i].transform = mf.transform.localToWorldMatrix;
+                CombineInstance currentInstance = combine[i] = new CombineInstance();
+                currentInstance.mesh = mf.sharedMesh;
+                currentInstance.transform = mf.transform.localToWorldMatrix;
             }
 
-            Mesh wallsMesh = new Mesh();
-            wallsMesh.name = "MergedWallsMesh";
+            Mesh wallsMesh = new Mesh
+            {
+                name = "MergedWallsMesh"
+            };
             wallsMesh.CombineMeshes(combine);
 
             mergedMF.mesh = wallsMesh;
@@ -266,6 +268,7 @@ namespace MazeGame.Maze
 
         private void CreateColliders()
         {
+            // create a mesh collider using a simplified merged walls mesh
             Mesh wallColliderMesh = CreateSimplifiedWallsMesh();
 
             GameObject wallCollider = new GameObject("WallCollider");
@@ -276,6 +279,7 @@ namespace MazeGame.Maze
 
         private Mesh CreateSimplifiedWallsMesh()
         {
+            // merge collider versions of wall meshes
             CombineInstance[] combinedWallColliderMeshes = new CombineInstance[m_walls.Length];
 
             for (int i = 0; i < m_walls.Length; i++)
@@ -291,18 +295,21 @@ namespace MazeGame.Maze
                     continue;
                 }
 
-                combinedWallColliderMeshes[i] = new CombineInstance();
-                combinedWallColliderMeshes[i].mesh = mf.sharedMesh;
-                combinedWallColliderMeshes[i].transform = wall.m_instancedGameObject.transform.localToWorldMatrix;
+                CombineInstance currentMesh = combinedWallColliderMeshes[i] = new CombineInstance();
+                currentMesh.mesh = mf.sharedMesh;
+                currentMesh.transform = wall.m_instancedGameObject.transform.localToWorldMatrix;
             }
 
-            Mesh simplifiedWallsMesh = new Mesh();
-            simplifiedWallsMesh.name = "SimplifiedWallsMesh";
+            Mesh simplifiedWallsMesh = new Mesh()
+            {
+                name = "SimplifiedWallsMesh"
+            };
             simplifiedWallsMesh.CombineMeshes(combinedWallColliderMeshes);
 
             return simplifiedWallsMesh;
         }
 
+        // old overcomplicated and not useful collider generation code
         /*
 private GameObject CreateCollidersFromDict(Dictionary<int, Cell[]> groupedCellsDict, string suffix)
 {
@@ -635,7 +642,7 @@ private bool CheckIfCellIsWall(int index)
             {
                 return;
             }
-            int w = (int)this.m_size.x; //(int) <-- casting to int
+            int w = (int)this.m_size.x;
             int indLeft = index - 1;
             int indRight = index + 1;
             int indUp = index - w;

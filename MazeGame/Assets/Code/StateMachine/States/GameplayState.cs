@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using MazeGame.Core;
 using StateMachine.Core;
+using System;
 
 namespace StateMachine.States
 {
@@ -19,6 +20,7 @@ namespace StateMachine.States
             Game.m_input.OnMove += M_input_OnMove; //Assign delegate to new function
             Game.m_input.OnLook += M_input_OnLook;
             Game.m_input.OnJump += M_input_OnJump;
+            Game.m_input.OnSlide += M_input_OnSlide;
             Game.m_input.OnPause += M_input_OnPause;
             m_pauseParameter = m_stateMachine.GetParameter("Pause") as ParameterBool;
             m_pauseParameter.m_value = false; //Reset pause parameter
@@ -46,6 +48,7 @@ namespace StateMachine.States
             Game.m_input.OnMove -= M_input_OnMove;
             Game.m_input.OnLook -= M_input_OnLook;
             Game.m_input.OnJump -= M_input_OnJump;
+            Game.m_input.OnSlide -= M_input_OnSlide;
             Game.m_input.OnPause -= M_input_OnPause;
         }
 
@@ -62,6 +65,11 @@ namespace StateMachine.States
         private void M_input_OnJump()
         {
             Game.m_player.JumpPlayer();
+        }
+
+        private void M_input_OnSlide()
+        {
+            Game.m_player.SlidePlayer();
         }
 
         private void M_input_OnPause()

@@ -6,19 +6,35 @@ namespace MazeGame.Components
 {
     public class PlayerComponent : MonoBehaviour
     {
-        public float m_jumpForce = 300f;
+        //Editor adjustments
+
+        //Movement
+        public float m_rotationSpeedMultiplier = 0.2f;
         public float m_moveForce = 10f;
         public float m_maxSpeed = 100f;
-        public float m_maxUpwardsSpeed = 20f;
-        public float m_airForceMultiplier = 0.3f;
         public float m_lowVelocityThreshold = 0.1f;
         public float m_lowVelocityForceMultiplier = 2f;
         public float m_counterForceMultiplier = 1.5f;
+
+        //Jumping
+        public float m_jumpForce = 300f;
+        public float m_maxUpwardsSpeed = 20f;
+        public float m_airForceMultiplier = 0.3f;
+
+        //Wall
         public float m_wallJumpForceUpwardsMultiplier = 1f;
         public float m_wallJumpForceOutwardsMultiplier = 0.5f;
         public float m_wallJumpForceForwardsMultiplier = 0.2f;
         public float m_wallJumpForceUpwardsCounterMultiplier = 20f;
-        public float m_rotationSpeedMultiplier = 0.2f;
+
+        //TODO: Slide
+        public float m_slideForce = 150f;
+        public float m_slideMovementForceMultiplier = 0.6f;
+
+        //Camera
+        public float cameraLerpSpeed = 1f;
+
+        //Private
         private float m_currentContactDot = -1f;
         private float m_lowestContactDot = 1f;
         private Vector3 m_currentContactNormal = Vector3.zero;

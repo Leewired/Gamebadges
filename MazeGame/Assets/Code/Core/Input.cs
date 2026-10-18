@@ -13,6 +13,8 @@ namespace MazeGame.Core
 		public event OnLookHandler OnLook;
 		public delegate void OnJumpHandler();
 		public event OnJumpHandler OnJump;
+		public delegate void OnSlideHandler();
+		public event OnSlideHandler OnSlide;
 		
 		public delegate void OnAcceptHandler();
         public event OnAcceptHandler OnAccept;
@@ -47,6 +49,10 @@ namespace MazeGame.Core
 		public void InputJump() //TODO: add float parameter for jump height if needed
         {
             OnJump?.Invoke();
+        }
+		public void InputSlide() //TODO: add float parameter for jump height if needed
+        {
+            OnSlide?.Invoke();
         }
 		public void InputAccept()
 		{
